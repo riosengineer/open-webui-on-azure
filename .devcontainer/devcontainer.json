@@ -1,3 +1,4 @@
+
 {
   "name": "Azure Dev Container",
   "features": {
@@ -18,7 +19,8 @@
         "ms-vscode.powershell",
         "ms-azuretools.vscode-bicep",
         "ms-azuretools.vscode-apimanagement",
-        "ms-foundry.vscode-extension"
+        "ms-foundry.vscode-extension",
+        "github.vscode-pull-request-github"
       ],
       "settings": {
         "github.copilot.chat.codeGeneration.instructions": [
