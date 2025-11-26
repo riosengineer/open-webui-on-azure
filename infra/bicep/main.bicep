@@ -76,6 +76,7 @@ module modFrontDoor 'br/public:avm/res/cdn/profile:0.16.1' = {
   params: {
     name: parFrontDoorName
     sku: parFrontDoorSku
+    location: 'global'
     afdEndpoints:[
       {
         name: 'afd-${varOpenWebUi}-endpoint'
