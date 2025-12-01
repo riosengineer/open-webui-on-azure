@@ -13,7 +13,7 @@ param parApimSubnetAddressPrefix string
 var varOpenWebUi = 'open-webui'
 var varNsgRules = loadJsonContent('nsg-rules.json')
 
-module modCoreResourceGroup 'br/public:avm/res/resources/resource-group:0.4.2' = {
+module modResourceGroup 'br/public:avm/res/resources/resource-group:0.4.2' = {
   params: {
     name: parResourceGroupName
     location: parLocation
@@ -35,6 +35,9 @@ module modVirtualNetwork 'br/public:avm/res/network/virtual-network:0.7.1' = {
       }
     ]
   }
+  dependsOn: [
+    modResourceGroup
+  ]
 }
 
 module nsgApim 'br/public:avm/res/network/network-security-group:0.5.2' = {
@@ -45,6 +48,9 @@ module nsgApim 'br/public:avm/res/network/network-security-group:0.5.2' = {
     // See: https://learn.microsoft.com/en-us/azure/api-management/api-management-using-with-internal-vnet?tabs=stv2#configure-nsg-rules
     securityRules: varNsgRules
   }
+  dependsOn: [
+    modResourceGroup
+  ]
 }
   
 module modLogAnalyticsWorkspace 'br/public:avm/res/operational-insights/workspace:0.13.0' = {
@@ -57,6 +63,9 @@ module modLogAnalyticsWorkspace 'br/public:avm/res/operational-insights/workspac
       disableLocalAuth: false
     }
   }
+  dependsOn: [
+    modResourceGroup
+  ]
 }
 
 module modAppInsights 'br/public:avm/res/insights/component:0.7.0' = {
@@ -69,6 +78,9 @@ module modAppInsights 'br/public:avm/res/insights/component:0.7.0' = {
     location: parLocation
     kind: 'web'
   }
+  dependsOn: [
+    modResourceGroup
+  ]
 }
 
 module modFrontDoor 'br/public:avm/res/cdn/profile:0.16.1' = {
@@ -103,7 +115,11 @@ module modFrontDoor 'br/public:avm/res/cdn/profile:0.16.1' = {
     originGroups: [
       {
         name: 'apim-origin-group'
-        loadBalancingSettings: {}
+        loadBalancingSettings: {
+          additionalLatencyInMilliseconds: 50
+          sampleSize: 4
+          successfulSamplesRequired: 3
+        }
         origins: [
           {
             name: 'afd-apim-origin'
@@ -116,6 +132,9 @@ module modFrontDoor 'br/public:avm/res/cdn/profile:0.16.1' = {
       systemAssigned: true
     }
   }
+  dependsOn: [
+    modResourceGroup
+  ]
 }
 
 module modApim 'br/public:avm/res/api-management/service:0.12.0' = {
@@ -131,4 +150,7 @@ module modApim 'br/public:avm/res/api-management/service:0.12.0' = {
       systemAssigned: true
     }
   }
+  dependsOn: [
+    modResourceGroup
+  ]
 }
