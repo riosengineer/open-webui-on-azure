@@ -123,7 +123,7 @@ module modFrontDoor 'br/public:avm/res/cdn/profile:0.16.1' = {
         origins: [
           {
             name: 'afd-apim-origin'
-            hostName: 'https://${parApimName}.azure-api.net'
+            hostName: '${parApimName}.azure-api.net'
           }
         ]
       }
