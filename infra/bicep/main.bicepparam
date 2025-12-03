@@ -4,11 +4,12 @@ param parApimName = 'apim-open-webui'
 param parLocation = 'uksouth'
 param parApimPublisherEmail = 'dan@rios.engineer'
 param parApimPublisherName = 'Dan Rios'
-param parFrontDoorName = 'afd-open-webui'
+param parAppGatewayName = 'appgw-open-webui'
 param parResourceGroupName = 'rg-lb-core'
 param parVirtualNetworkName = 'vnet-lb-core'
 param parVirtualNetworkAddressPrefix = '10.0.0.0/24'
 param parApimSubnetAddressPrefix = '10.0.0.0/28'
-param parFrontDoorSku = 'Standard_AzureFrontDoor'
-param parContainerAppFqdn = '' // e.g., 'myapp.internal.uksouth.azurecontainerapps.io'
-param parContainerAppResourceId = '' // e.g., '/subscriptions/.../resourceGroups/.../providers/Microsoft.App/managedEnvironments/...'
+param parAppGatewaySubnetAddressPrefix = '10.0.0.64/26'  // App Gateway requires at least /26
+
+// Container App FQDN (populate after deploying app.bicep)
+param parContainerAppFqdn = '' 
