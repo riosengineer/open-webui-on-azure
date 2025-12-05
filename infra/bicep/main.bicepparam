@@ -14,4 +14,5 @@ param parContainerAppFqdn = 'open-webui-app-aca.jollyfield-adf491b7.uksouth.azur
 param parContainerAppStaticIp = '10.0.4.91'
 param parSpokeResourceGroupName = 'rg-open-webui-app'
 param parSpokeVirtualNetworkName = 'open-webui-app-vnet'
-param parCustomDomain = 'openwebui.rios.engineer' 
+param parCustomDomain = 'openwebui.rios.engineer'
+param parSpokeKeyVaultName = 'open-webui-app-kv' 

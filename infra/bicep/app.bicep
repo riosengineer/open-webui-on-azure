@@ -9,6 +9,8 @@ param parAcaSubnetAddressPrefix string
 param parHubResourceGroupName string
 param parHubVirtualNetworkName string
 param parCustomDomain string
+param parCertificateName string = 'cloudflare-origin-cert'
+
 var varOpenWebUiShare = 'open-webui-share'
 var varOpenWebUiApp = 'open-webui-app'
 var varAppRegistrationName = 'app-open-webui'
@@ -20,7 +22,6 @@ resource entraIdApp 'Microsoft.Graph/applications@v1.0' = {
   web: {
     redirectUris: [
       'https://${parCustomDomain}/.auth/login/aad/callback'
-      'https://${varOpenWebUiApp}-aca.${modContainerAppEnv.outputs.defaultDomain}/.auth/login/aad/callback'
     ]
     implicitGrantSettings: {
       enableIdTokenIssuance: true
@@ -73,6 +74,7 @@ module modVirtualNetwork 'br/public:avm/res/network/virtual-network:0.7.1' = {
         networkSecurityGroupResourceId: nsgContainerApp.outputs.resourceId
         serviceEndpoints: [
           'Microsoft.Storage'
+          'Microsoft.CognitiveServices'
         ]
       }
     ]
@@ -177,6 +179,26 @@ module modStorageAccount 'br/public:avm/res/storage/storage-account:0.29.0' = {
   dependsOn: [modResourceGroup]
 }
 
+module modEnvIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.1' = {
+  scope: resourceGroup(parResourceGroupName)
+  params: {
+    name: 'umi-${varOpenWebUiApp}'
+    location: parLocation
+  }
+  dependsOn: [modResourceGroup]
+}
+
+module modEnvKeyVaultRbac 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = {
+  scope: resourceGroup(parResourceGroupName)
+  params: {
+    principalId: modEnvIdentity.outputs.principalId
+    roleName: 'Key Vault Secrets User'
+    resourceId: modKeyVault.outputs.resourceId
+    roleDefinitionId: '4633458b-17de-408a-b874-0445c86b69e6'
+    principalType: 'ServicePrincipal'
+  }
+}
+
 module modContainerAppEnv 'br/public:avm/res/app/managed-environment:0.11.3' = {
   scope: resourceGroup(parResourceGroupName)
   params: {
@@ -194,8 +216,22 @@ module modContainerAppEnv 'br/public:avm/res/app/managed-environment:0.11.3' = {
     ]
     internal: true
     infrastructureSubnetResourceId: modVirtualNetwork.outputs.subnetResourceIds[0]
+    managedIdentities: {
+      systemAssigned: true
+      userAssignedResourceIds: [
+        modEnvIdentity.outputs.resourceId
+      ]
+    }
+    // az keyvault certificate import --vault-name <kv-name> --name <cert-name> --file file.pfx
+    certificate: {
+      name: parCertificateName
+      certificateKeyVaultProperties: {
+        identityResourceId: modEnvIdentity.outputs.resourceId
+        keyVaultUrl: '${modKeyVault.outputs.uri}secrets/${parCertificateName}'
+      }
+    }
   }
-  dependsOn: [modResourceGroup]
+  dependsOn: [modResourceGroup, modEnvKeyVaultRbac]
 }
 
 module modContainerApp 'br/public:avm/res/app/container-app:0.19.0' = {
@@ -203,6 +239,13 @@ module modContainerApp 'br/public:avm/res/app/container-app:0.19.0' = {
   params: {
     name: '${varOpenWebUiApp}-aca'
     ingressTargetPort: 8080
+    customDomains: [
+      {
+        name: parCustomDomain
+        certificateId: '${modContainerAppEnv.outputs.resourceId}/certificates/${parCertificateName}'
+        bindingType: 'SniEnabled'
+      }
+    ]
     containers: [
       {
         name: 'open-webui-container'
@@ -236,7 +279,7 @@ module modContainerApp 'br/public:avm/res/app/container-app:0.19.0' = {
     ]
     scaleSettings: {
       maxReplicas: 1
-      minReplicas: 1
+      minReplicas: 0
       rules: [
         {
           name: 'http-rule'
@@ -282,6 +325,7 @@ module modContainerApp 'br/public:avm/res/app/container-app:0.19.0' = {
         enabled: true
       }
     }
+    ingressAllowInsecure: false
     environmentResourceId: modContainerAppEnv.outputs.resourceId
     location: parLocation
     managedIdentities: {
@@ -302,6 +346,56 @@ module modStorageRbac 'br/public:avm/ptn/authorization/resource-role-assignment:
   }
 }
 
+module modFoundry 'br/public:avm/res/cognitive-services/account:0.14.0' = {
+  scope: resourceGroup(parResourceGroupName)
+  params: {
+    name: '${varOpenWebUiApp}-foundry'
+    location: parLocation
+    kind: 'AIServices'
+    sku: 'S0'
+    disableLocalAuth: true
+    managedIdentities: {
+      systemAssigned: true
+    }
+    allowProjectManagement: true
+    customSubDomainName: replace('${varOpenWebUiApp}-foundry', '-', '')
+    networkAcls:{
+      defaultAction: 'Deny'
+      virtualNetworkRules:[
+        {
+          id: modVirtualNetwork.outputs.subnetResourceIds[0]
+          ignoreMissingVnetServiceEndpoint: false
+        }
+      ]
+    }
+    deployments: [
+        {
+          name: 'gpt-4o'
+          model: {
+            format: 'OpenAI'
+            name: 'gpt-4o'
+            version: '2024-11-20'
+          }
+          sku: {
+            name: 'Standard'
+            capacity: 10
+          }
+        }
+      ]
+  }
+  dependsOn: [modResourceGroup]
+}
+
+module modFoundryRbac 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = {
+  scope: resourceGroup(parResourceGroupName)
+  params: {
+    principalId: modContainerApp.outputs.systemAssignedMIPrincipalId!
+    roleName: 'Cognitive Services OpenAI User'
+    resourceId: modFoundry.outputs.resourceId
+    roleDefinitionId: '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'
+    principalType: 'ServicePrincipal'
+  }
+}
 
 output outContainerAppFqdn string = modContainerApp.outputs.fqdn
 output outContainerAppResourceId string = modContainerApp.outputs.resourceId

@@ -1,5 +1,5 @@
 targetScope = 'subscription'
-
+// Parameters
 param parLocation string
 param parResourceGroupName string
 param parAppGatewayName string
@@ -17,13 +17,14 @@ param parContainerAppFqdn string
 param parContainerAppStaticIp string
 param parSpokeResourceGroupName string
 param parSpokeVirtualNetworkName string
-@description('Custom domain for the Container App listener (e.g., openwebui.example.com).')
-param parCustomDomain string = ''
-
+param parCustomDomain string
+param parSpokeKeyVaultName string
+// Variables
 var varOpenWebUi = 'open-webui'
 var varNsgRules = loadJsonContent('nsg-rules.json')
 var varContainerAppEnvDefaultDomain = !empty(parContainerAppFqdn) ? join(skip(split(parContainerAppFqdn, '.'), 1), '.') : ''
 var varContainerAppName = !empty(parContainerAppFqdn) ? split(parContainerAppFqdn, '.')[0] : ''
+var varCloudflareOriginCaBase64 = loadTextContent('cloudflare-origin-ca.cer')
 
 module modResourceGroup 'br/public:avm/res/resources/resource-group:0.4.2' = {
   params: {
@@ -50,7 +51,6 @@ module modVirtualNetwork 'br/public:avm/res/network/virtual-network:0.7.1' = {
         addressPrefix: parAppGatewaySubnetAddressPrefix
       }
     ]
-    // Hub to Spoke VNet peering
     peerings: !empty(parSpokeVirtualNetworkName) ? [
       {
         remoteVirtualNetworkResourceId: resourceId(subscription().subscriptionId, parSpokeResourceGroupName, 'Microsoft.Network/virtualNetworks', parSpokeVirtualNetworkName)
@@ -151,6 +151,56 @@ module modAppGatewayPublicIp 'br/public:avm/res/network/public-ip-address:0.8.0'
   ]
 }
 
+module modAppGatewayIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.1' = if (!empty(parCustomDomain)) {
+  scope: resourceGroup(parResourceGroupName)
+  name: 'appgw-identity'
+  params: {
+    name: '${parAppGatewayName}-identity'
+    location: parLocation
+  }
+  dependsOn: [modResourceGroup]
+}
+
+module modHubKeyVault 'br/public:avm/res/key-vault/vault:0.13.3' = if (!empty(parCustomDomain)) {
+  scope: resourceGroup(parResourceGroupName)
+  name: 'hub-keyvault'
+  params: {
+    name: 'kv-${parAppGatewayName}'
+    location: parLocation
+    sku: 'standard'
+    enableRbacAuthorization: true
+    enablePurgeProtection: false
+    softDeleteRetentionInDays: 7
+    secrets: [
+      {
+        name: 'cloudflare-origin-ca'
+        value: varCloudflareOriginCaBase64
+      }
+    ]
+  }
+  dependsOn: [modResourceGroup]
+}
+
+module modAppGatewayKeyVaultRbac 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = if (!empty(parCustomDomain)) {
+  scope: resourceGroup(parResourceGroupName)
+  name: 'appgw-keyvault-rbac'
+  params: {
+    principalId: modAppGatewayIdentity.outputs.principalId
+    resourceId: modHubKeyVault.outputs.resourceId
+    roleDefinitionId: '4633458b-17de-408a-b874-0445c86b69e6' // Key Vault Secrets User
+  }
+}
+
+module modAppGatewaySpokeKeyVaultRbac 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = if (!empty(parCustomDomain) && !empty(parSpokeKeyVaultName)) {
+  scope: resourceGroup(parSpokeResourceGroupName)
+  name: 'appgw-spoke-keyvault-rbac'
+  params: {
+    principalId: modAppGatewayIdentity.outputs.principalId
+    resourceId: resourceId(subscription().subscriptionId, parSpokeResourceGroupName, 'Microsoft.KeyVault/vaults', parSpokeKeyVaultName)
+    roleDefinitionId: '4633458b-17de-408a-b874-0445c86b69e6' // Key Vault Secrets User
+  }
+}
+
 module modAppGateway 'br/public:avm/res/network/application-gateway:0.6.0' = {
   scope: resourceGroup(parResourceGroupName)
   params: {
@@ -159,6 +209,27 @@ module modAppGateway 'br/public:avm/res/network/application-gateway:0.6.0' = {
     sku: 'Standard_v2'
     capacity: 1
     zones: []
+    managedIdentities: !empty(parCustomDomain) ? {
+      userAssignedResourceIds: [
+        modAppGatewayIdentity.outputs.resourceId
+      ]
+    } : null
+    trustedRootCertificates: !empty(parCustomDomain) ? [
+      {
+        name: 'cloudflare-origin-ca'
+        properties: {
+          keyVaultSecretId: '${modHubKeyVault.outputs.uri}secrets/cloudflare-origin-ca'
+        }
+      }
+    ] : []
+    sslCertificates: (!empty(parCustomDomain) && !empty(parSpokeKeyVaultName)) ? [
+      {
+        name: 'cloudflare-origin-cert'
+        properties: {
+          keyVaultSecretId: 'https://${parSpokeKeyVaultName}${environment().suffixes.keyvaultDns}/secrets/cloudflare-origin-cert'
+        }
+      }
+    ] : []
     gatewayIPConfigurations: [
       {
         name: 'appgw-ip-config'
@@ -235,8 +306,14 @@ module modAppGateway 'br/public:avm/res/network/application-gateway:0.6.0' = {
           port: 443
           protocol: 'Https'
           cookieBasedAffinity: 'Disabled'
-          pickHostNameFromBackendAddress: true
+          pickHostNameFromBackendAddress: !empty(parCustomDomain) ? false : true
+          hostName: !empty(parCustomDomain) ? parCustomDomain : null
           requestTimeout: 30
+          trustedRootCertificates: !empty(parCustomDomain) ? [
+            {
+              id: resourceId(subscription().subscriptionId, parResourceGroupName, 'Microsoft.Network/applicationGateways/trustedRootCertificates', parAppGatewayName, 'cloudflare-origin-ca')
+            }
+          ] : null
           probe: {
             id: resourceId(subscription().subscriptionId, parResourceGroupName, 'Microsoft.Network/applicationGateways/probes', parAppGatewayName, 'containerapp-health-probe')
           }
@@ -267,7 +344,8 @@ module modAppGateway 'br/public:avm/res/network/application-gateway:0.6.0' = {
           interval: 30
           timeout: 30
           unhealthyThreshold: 3
-          pickHostNameFromBackendHttpSettings: true
+          pickHostNameFromBackendHttpSettings: !empty(parCustomDomain) ? false : true
+          host: !empty(parCustomDomain) ? parCustomDomain : null
           minServers: 0
           match: {
             statusCodes: ['200-399', '401']
@@ -302,6 +380,22 @@ module modAppGateway 'br/public:avm/res/network/application-gateway:0.6.0' = {
           hostName: parCustomDomain
         }
       }
+      {
+        name: 'containerapp-https-listener'
+        properties: {
+          frontendIPConfiguration: {
+            id: resourceId(subscription().subscriptionId, parResourceGroupName, 'Microsoft.Network/applicationGateways/frontendIPConfigurations', parAppGatewayName, 'appgw-frontend-ip')
+          }
+          frontendPort: {
+            id: resourceId(subscription().subscriptionId, parResourceGroupName, 'Microsoft.Network/applicationGateways/frontendPorts', parAppGatewayName, 'port-443')
+          }
+          protocol: 'Https'
+          hostName: parCustomDomain
+          sslCertificate: (!empty(parCustomDomain) && !empty(parSpokeKeyVaultName)) ? {
+            id: resourceId(subscription().subscriptionId, parResourceGroupName, 'Microsoft.Network/applicationGateways/sslCertificates', parAppGatewayName, 'cloudflare-origin-cert')
+          } : null
+        }
+      }
     ]
     requestRoutingRules: [
       {
@@ -334,12 +428,62 @@ module modAppGateway 'br/public:avm/res/network/application-gateway:0.6.0' = {
           backendHttpSettings: {
             id: resourceId(subscription().subscriptionId, parResourceGroupName, 'Microsoft.Network/applicationGateways/backendHttpSettingsCollection', parAppGatewayName, 'containerapp-backend-settings')
           }
+          rewriteRuleSet: !empty(parCustomDomain) ? {
+            id: resourceId(subscription().subscriptionId, parResourceGroupName, 'Microsoft.Network/applicationGateways/rewriteRuleSets', parAppGatewayName, 'containerapp-rewrite-rules')
+          } : null
+        }
+      }
+      {
+        name: 'containerapp-https-routing-rule'
+        properties: {
+          ruleType: 'Basic'
+          priority: 201
+          httpListener: {
+            id: resourceId(subscription().subscriptionId, parResourceGroupName, 'Microsoft.Network/applicationGateways/httpListeners', parAppGatewayName, 'containerapp-https-listener')
+          }
+          backendAddressPool: {
+            id: resourceId(subscription().subscriptionId, parResourceGroupName, 'Microsoft.Network/applicationGateways/backendAddressPools', parAppGatewayName, 'containerapp-backend-pool')
+          }
+          backendHttpSettings: {
+            id: resourceId(subscription().subscriptionId, parResourceGroupName, 'Microsoft.Network/applicationGateways/backendHttpSettingsCollection', parAppGatewayName, 'containerapp-backend-settings')
+          }
+          rewriteRuleSet: !empty(parCustomDomain) ? {
+            id: resourceId(subscription().subscriptionId, parResourceGroupName, 'Microsoft.Network/applicationGateways/rewriteRuleSets', parAppGatewayName, 'containerapp-rewrite-rules')
+          } : null
         }
       }
     ]
+    rewriteRuleSets: !empty(parCustomDomain) ? [
+      {
+        name: 'containerapp-rewrite-rules'
+        properties: {
+          rewriteRules: [
+            {
+              name: 'set-forwarded-headers'
+              ruleSequence: 100
+              conditions: []
+              actionSet: {
+                requestHeaderConfigurations: [
+                  {
+                    headerName: 'X-Forwarded-Host'
+                    headerValue: parCustomDomain
+                  }
+                  {
+                    headerName: 'X-Forwarded-Proto'
+                    headerValue: 'https'
+                  }
+                ]
+                responseHeaderConfigurations: []
+              }
+            }
+          ]
+        }
+      }
+    ] : []
   }
   dependsOn: [
     modResourceGroup
+    modAppGatewayKeyVaultRbac
   ]
 }
 
