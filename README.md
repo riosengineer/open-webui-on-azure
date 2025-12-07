@@ -46,26 +46,26 @@ az deployment sub create \
   --parameters infra/bicep/main.bicepparam
 ```
 
-### 3. Import Foundry API OpenAPI Specification
+### 3. Import Azure OpenAI Operations from OpenAPI Specification
 
-After the hub deployment completes, import the OpenAPI spec for the Foundry API:
+The Bicep deployment creates the `openai` API with the policy, but the OpenAPI spec is too large to embed in Bicep. Import the operations after deployment:
 
 ```bash
-# Get APIM details from deployment outputs
-APIM_NAME=$(az deployment sub show --name <deployment-name> --query properties.outputs.outApimName.value -o tsv)
-RESOURCE_GROUP=$(az deployment sub show --name <deployment-name> --query properties.outputs.outApimResourceId.value -o tsv | cut -d'/' -f5)
+# Set your values
+RESOURCE_GROUP="rg-lb-core"
+APIM_NAME="apim-open-webui"
 
-# Import the OpenAPI specification
+# Import the OpenAPI specification operations into the existing API
 az apim api import \
   --resource-group $RESOURCE_GROUP \
   --service-name $APIM_NAME \
-  --api-id foundry \
-  --path foundry \
+  --api-id openai \
+  --path openai \
   --specification-format OpenApi \
-  --specification-path infra/bicep/openapi/foundry.openapi.json
+  --specification-path infra/bicep/openapi/openai.openapi.json
 ```
 
-> **Note**: The OpenAPI spec exceeds Bicep's inline size limit (131KB), so it must be imported post-deployment using Azure CLI.
+> **Note**: The Bicep creates the API shell with the policy (`openai-api-openwebui.xml`). This CLI command adds the 45+ operations from the OpenAPI spec. The policy uses Azure Foundry's v1 API for OpenAI compatibility.
 
 ### 4. Configure Cloudflare DNS
 
@@ -73,11 +73,13 @@ az apim api import \
 2. Enable **Proxy (orange cloud)**
 3. Set SSL/TLS mode to **Full (strict)**
 
-## Post-Deployment: Connect Open WebUI to Azure AI Foundry
+## Post-Deployment: Connect Open WebUI to Azure OpenAI via APIM
 
-After deployment, you need to configure the Azure OpenAI connection in Open WebUI:
+After deployment, configure Open WebUI to call Azure OpenAI through your APIM gateway:
 
-1. Navigate to your Open WebUI instance (e.g., `https://openwebui.yourdomain.com`)
+### Option 1: Direct Connection to APIM (Recommended)
+
+1. Navigate to your Open WebUI instance
 2. Log in with your Entra ID account
 3. Go to **Admin Settings** → **Connections**
 4. Click **+ Add Connection** (OpenAI type)
@@ -85,16 +87,41 @@ After deployment, you need to configure the Azure OpenAI connection in Open WebU
 
 | Field | Value |
 |-------|-------|
-| **URL** | `https://<your-foundry-name>.openai.azure.com/` |
-| **Auth Type** | `Entra ID` |
-| **API Version** | `2024-10-21` |
-| **Deployment Names** | `gpt-4o` |
+| **Name** | `Azure OpenAI via APIM` |
+| **API Base URL** | `https://apim-open-webui.azure-api.net/openai/v1` |
+| **API Key** | Get from APIM → Subscriptions → Copy primary key |
+| **API Type** | `OpenAI` |
 
-6. Click **Save**
+1. Click **Save** and **Verify Connection**
 
-The GPT-4o model will now appear in the model dropdown when starting a new chat.
+### Getting Your APIM Subscription Key
 
-> **Note**: The connection uses Managed Identity authentication - no API keys required. The Container App's system-assigned identity has the `Cognitive Services OpenAI User` role on the AI Foundry resource.
+```bash
+# Get the built-in subscription key
+az rest --method post \
+  --url "/subscriptions/<subscription-id>/resourceGroups/rg-lb-core/providers/Microsoft.ApiManagement/service/apim-open-webui/subscriptions/master/listSecrets?api-version=2024-05-01" \
+  --query "primaryKey" -o tsv
+```
+
+Or get it from the Azure Portal:
+1. Go to API Management → `apim-open-webui`
+2. Navigate to **Subscriptions**
+3. Find **Built-in all-access subscription**
+4. Click **Show/hide keys** and copy the **Primary key**
+
+### Testing from Open WebUI
+
+Once configured, you can:
+- Select models from the dropdown (they'll appear after connection is verified)
+- Start a new chat
+- Send a message to test the connection
+
+The request flow will be:
+```
+Open WebUI → APIM Gateway → Managed Identity Auth → Azure AI Foundry → GPT-4o
+```
+
+> **Note**: The APIM subscription key authenticates requests to APIM, then APIM uses its managed identity to authenticate to Azure AI Foundry. No Foundry API keys are exposed.
 
 ### Allow APIM egress on Foundry firewall (if using network ACLs)
 

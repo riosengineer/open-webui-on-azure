@@ -508,8 +508,8 @@ module modApim 'br/public:avm/res/api-management/service:0.12.0' = {
     apis: [
       {
         name: 'openai'
-        displayName: 'Foundry OpenAI'
-        path: 'openai'
+        displayName: 'Azure OpenAI v1 API'
+        path: 'openai/v1'
         apiType: 'http'
         protocols: [
           'https'
@@ -518,22 +518,15 @@ module modApim 'br/public:avm/res/api-management/service:0.12.0' = {
         subscriptionKeyParameterNames: {
           header: 'api-key'
         }
-        serviceUrl: ''
-        diagnostics: [
-          {
-            loggerName: modAppInsights.outputs.name
-            metrics: true
-            verbosity: 'error'
-            name: 'applicationinsights'
-            httpCorrelationProtocol: 'W3C'
-          }
-        ]
+        serviceUrl: parFoundryEndpoint
+        diagnostics: []
         policies: [
           {
             format: 'rawxml'
             value: loadTextContent('policies/openai-api.xml')
           }
         ]
+        // az apim api import --resource-group rg-lb-core --service-name apim-open-webui --api-id openai --path openai/v1 --specification-format OpenApi --specification-path infra/bicep/openapi/openai.openapi.json
       }
       {
         name: 'grok'
