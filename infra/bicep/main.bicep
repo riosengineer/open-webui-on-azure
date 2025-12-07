@@ -507,9 +507,9 @@ module modApim 'br/public:avm/res/api-management/service:0.12.0' = {
     ]
     apis: [
       {
-        name: 'foundry'
-        displayName: 'Microsoft Foundry'
-        path: 'foundry/models'
+        name: 'openai'
+        displayName: 'Foundry OpenAI'
+        path: 'openai'
         apiType: 'http'
         protocols: [
           'https'
@@ -519,11 +519,19 @@ module modApim 'br/public:avm/res/api-management/service:0.12.0' = {
           header: 'api-key'
         }
         serviceUrl: ''
-        diagnostics: []
+        diagnostics: [
+          {
+            loggerName: modAppInsights.outputs.name
+            metrics: true
+            verbosity: 'error'
+            name: 'applicationinsights'
+            httpCorrelationProtocol: 'W3C'
+          }
+        ]
         policies: [
           {
             format: 'rawxml'
-            value: loadTextContent('policies/foundry-api.xml')
+            value: loadTextContent('policies/openai-api.xml')
           }
         ]
       }
@@ -544,7 +552,7 @@ module modApim 'br/public:avm/res/api-management/service:0.12.0' = {
         policies: [
           {
             format: 'rawxml'
-            value: loadTextContent('policies/foundry-api.xml')
+            value: loadTextContent('policies/openai-api.xml')
           }
         ]
       }
@@ -565,9 +573,18 @@ module modApim 'br/public:avm/res/api-management/service:0.12.0' = {
       systemAssigned: true
     }
   }
-  dependsOn: [
-    modResourceGroup
-  ]
+  dependsOn: [modResourceGroup]
+}
+
+module modApimMetricsPublisherRbac 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = {
+  scope: resourceGroup(parResourceGroupName)
+  params: {
+    principalId: modApim.outputs.systemAssignedMIPrincipalId!
+    principalType: 'ServicePrincipal'
+    roleDefinitionId: '749f88d5-cbae-40b8-bcfc-e573ddc772fa' // Monitoring Metrics Publisher
+    resourceId: modAppInsights.outputs.resourceId
+  }
+  dependsOn: [modResourceGroup]
 }
 
 output outApimName string = modApim.outputs.name
