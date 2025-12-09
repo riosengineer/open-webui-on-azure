@@ -21,13 +21,17 @@ param parSpokeVirtualNetworkName string
 param parCustomDomain string
 param parSpokeKeyVaultName string
 param parOpenWebUIAppId string
+@description('Name of the Key Vault secret that stores the trusted root certificate in the hub Key Vault.')
+param parTrustedRootCertificateSecretName string = 'cloudflare-origin-ca'
+@description('Name of the Key Vault secret in the spoke Key Vault that stores the TLS certificate for the custom domain.')
+param parSslCertificateSecretName string = 'cloudflare-origin-cert'
 
 // Variables
 var varOpenWebUi = 'open-webui'
 var varNsgRules = loadJsonContent('nsg-rules.json')
 var varContainerAppEnvDefaultDomain = !empty(parContainerAppFqdn) ? join(skip(split(parContainerAppFqdn, '.'), 1), '.') : '' // if FQDN is myapp.uksouth.azurecontainerapps.io, this trims string to uksouth.azurecontainerapps.io
 var varContainerAppName = !empty(parContainerAppFqdn) ? split(parContainerAppFqdn, '.')[0] : '' // if FQDN is myapp.uksouth.azurecontainerapps.io, trims string to 'myapp'
-var varCloudflareOriginCaBase64 = loadTextContent('cloudflare-origin-ca.cer')
+var varTrustedRootCertificateBase64 = loadTextContent('cloudflare-origin-ca.cer')
 
 module modResourceGroup 'br/public:avm/res/resources/resource-group:0.4.2' = {
   params: {
@@ -174,8 +178,8 @@ module modHubKeyVault 'br/public:avm/res/key-vault/vault:0.13.3' = if (!empty(pa
     softDeleteRetentionInDays: 7
     secrets: [
       {
-        name: 'cloudflare-origin-ca'
-        value: varCloudflareOriginCaBase64
+        name: parTrustedRootCertificateSecretName
+        value: varTrustedRootCertificateBase64
       }
     ]
   }
@@ -215,17 +219,17 @@ module modAppGateway 'br/public:avm/res/network/application-gateway:0.6.0' = {
     } : null
     trustedRootCertificates: !empty(parCustomDomain) ? [
       {
-        name: 'cloudflare-origin-ca'
+        name: parTrustedRootCertificateSecretName
         properties: {
-          keyVaultSecretId: '${modHubKeyVault.outputs.uri}secrets/cloudflare-origin-ca'
+          keyVaultSecretId: '${modHubKeyVault.outputs.uri}secrets/${parTrustedRootCertificateSecretName}'
         }
       }
     ] : []
     sslCertificates: (!empty(parCustomDomain) && !empty(parSpokeKeyVaultName)) ? [
       {
-        name: 'cloudflare-origin-cert'
+        name: parSslCertificateSecretName
         properties: {
-          keyVaultSecretId: 'https://${parSpokeKeyVaultName}${environment().suffixes.keyvaultDns}/secrets/cloudflare-origin-cert'
+          keyVaultSecretId: 'https://${parSpokeKeyVaultName}${environment().suffixes.keyvaultDns}/secrets/${parSslCertificateSecretName}'
         }
       }
     ] : []
@@ -310,7 +314,7 @@ module modAppGateway 'br/public:avm/res/network/application-gateway:0.6.0' = {
           requestTimeout: 30
           trustedRootCertificates: !empty(parCustomDomain) ? [
             {
-              id: resourceId(subscription().subscriptionId, parResourceGroupName, 'Microsoft.Network/applicationGateways/trustedRootCertificates', parAppGatewayName, 'cloudflare-origin-ca')
+              id: resourceId(subscription().subscriptionId, parResourceGroupName, 'Microsoft.Network/applicationGateways/trustedRootCertificates', parAppGatewayName, parTrustedRootCertificateSecretName)
             }
           ] : null
           probe: {
@@ -391,7 +395,7 @@ module modAppGateway 'br/public:avm/res/network/application-gateway:0.6.0' = {
           protocol: 'Https'
           hostName: parCustomDomain
           sslCertificate: (!empty(parCustomDomain) && !empty(parSpokeKeyVaultName)) ? {
-            id: resourceId(subscription().subscriptionId, parResourceGroupName, 'Microsoft.Network/applicationGateways/sslCertificates', parAppGatewayName, 'cloudflare-origin-cert')
+            id: resourceId(subscription().subscriptionId, parResourceGroupName, 'Microsoft.Network/applicationGateways/sslCertificates', parAppGatewayName, parSslCertificateSecretName)
           } : null
         }
       }

@@ -1,7 +1,7 @@
 targetScope = 'subscription'
-
+// ms graph extensibility
 extension 'br:mcr.microsoft.com/bicep/extensions/microsoftgraph/v1.0:0.1.8-preview'
-
+// Parameters
 param parLocation string = 'uksouth'
 param parResourceGroupName string
 param parVirtualNetworkAddressPrefix string
@@ -10,9 +10,23 @@ param parHubResourceGroupName string
 param parHubVirtualNetworkName string
 param parCustomDomain string
 param parCertificateName string
-param parApimPrincipalId string = ''
+param parApimPrincipalId string
 param parApimGatewayUrl string
-
+param parApimAllowedIpAddresses array = []
+type FoundryDeploymentType = {
+  name: string
+  model: {
+    format: string
+    name: string
+    version: string
+  }
+  sku: {
+    name: string
+    capacity: int
+  }
+}
+param parFoundryDeployments FoundryDeploymentType[]
+// Variables
 var varOpenWebUiShare = 'open-webui-share'
 var varOpenWebUiApp = 'open-webui-app'
 var varAppRegistrationName = 'app-open-webui'
@@ -447,50 +461,11 @@ module modFoundry 'br/public:avm/res/cognitive-services/account:0.14.0' = {
           ignoreMissingVnetServiceEndpoint: false
         }
       ]
-      ipRules: [
-        {
-          value: '145.133.116.11' // APIM VIP PIP
-        }
-      ]
+      ipRules: [for ipAddress in parApimAllowedIpAddresses: {
+        value: ipAddress
+      }]
     }
-    deployments: [
-        {
-          name: 'gpt-4o'
-          model: {
-            format: 'OpenAI'
-            name: 'gpt-4o'
-            version: '2024-11-20'
-          }
-          sku: {
-            name: 'Standard'
-            capacity: 100
-          }
-        }
-        {
-          name: 'gpt-4o-mini'
-          model: {
-            format: 'OpenAI'
-            name: 'gpt-4o-mini'
-            version: '2024-07-18'
-          }
-          sku: {
-            name: 'GlobalStandard'
-            capacity: 100
-          }
-        }
-        {
-          name: 'grok-4-fast-reasoning'
-          model: {
-            format: 'xAI'
-            name: 'grok-4-fast-reasoning'
-            version: '1'
-          }
-          sku: {
-            name: 'GlobalStandard'
-            capacity: 100
-          }
-        }
-      ]
+    deployments: parFoundryDeployments
     roleAssignments: concat(
       [
         {
