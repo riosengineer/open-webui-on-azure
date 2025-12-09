@@ -2,7 +2,7 @@
   <inbound>
     <base />
     <choose>
-      <when condition="@(context.Request.Headers.ContainsKey("Authorization"))">
+       <when condition="@(context.Variables.GetValueOrDefault("iss", "").Equals("https://login.microsoftonline.com/{{tenant-id}}/v2.0"))">
         <validate-azure-ad-token tenant-id="{{tenant-id}}">
           <client-application-ids>
             <application-id>{{openwebui-app-id}}</application-id>
@@ -13,12 +13,16 @@
         </validate-azure-ad-token>
         <set-backend-service backend-id="foundry-models-backend" />
         <authentication-managed-identity resource="https://cognitiveservices.azure.com" />
-        <set-header name="Authorization" exists-action="delete" />
       </when>
       <otherwise>
         <return-response>
           <set-status code="401" reason="Unauthorized" />
           <set-header name="Content-Type" exists-action="override">
+            <value>application/json</value>
+          </set-header>
+          <set-body>@{
+            return "{ \"error\": { \"code\": \"401\", \"message\": \"Authorization header with valid OAuth token is required.\" } }";
+          }</set-body>
         </return-response>
       </otherwise>
     </choose>

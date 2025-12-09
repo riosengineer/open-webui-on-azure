@@ -39,10 +39,46 @@ param parFoundryDeployments = [
 		}
 	}
 	{
-		name: 'grok-4-fast-reasoning'
+		name: 'llama-4-maverick-17b-128e-instruct-fp8'
 		model: {
-			format: 'xAI'
-			name: 'grok-4-fast-reasoning'
+			format: 'meta'
+			name: 'llama-4-maverick-17b-128e-instruct-fp8'
+			version: '1'
+		}
+		sku: {
+			name: 'GlobalStandard'
+			capacity: 100
+		}
+	}
+	{
+		name: 'Mistral-Large-3'
+		model: {
+			format: 'mistral'
+			name: 'Mistral-Large-3'
+			version: '1'
+		}
+		sku: {
+			name: 'GlobalStandard'
+			capacity: 100
+		}
+	}
+	{
+		name: 'mistral-document-ai-2505'
+		model: {
+			format: 'mistral'
+			name: 'mistral-document-ai-2505'
+			version: '1'
+		}
+		sku: {
+			name: 'GlobalStandard'
+			capacity: 100
+		}
+	}
+	{
+		name: 'FLUX-1.1-pro'
+		model: {
+			format: 'flux'
+			name: 'FLUX-1.1-pro'
 			version: '1'
 		}
 		sku: {
