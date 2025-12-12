@@ -10,7 +10,10 @@ param parVirtualNetworkName string
 param parVirtualNetworkAddressPrefix string
 param parApimSubnetAddressPrefix string
 param parAppGatewaySubnetAddressPrefix string
-param parRedisCacheSubnetAddressPrefix string = '10.0.0.128/28'
+param parRedisCacheSubnetAddressPrefix string
+param parApimSku string
+param parAppGatewaySku string
+param parRedisCacheSku string
 param parSpokeResourceGroupName string
 param parSpokeVirtualNetworkName string
 @validate(
@@ -21,8 +24,8 @@ param parContainerAppStaticIp string
 param parCustomDomain string
 param parSpokeKeyVaultName string
 param parOpenWebUIAppId string
-param parTrustedRootCertificateSecretName string = 'cloudflare-origin-ca'
-param parSslCertificateSecretName string = 'cloudflare-origin-cert'
+param parTrustedRootCertificateSecretName string
+param parSslCertificateSecretName string
 param parFoundryEndpoint string
 // ========== Variables ==========
 var varOpenWebUi = 'open-webui'
@@ -129,6 +132,7 @@ module modRedisCache 'modules/cache.bicep' = {
   params: {
     parCacheName: 'redis-${parApimName}'
     parLocation: parLocation
+    parSkuName: parRedisCacheSku
     parSubnetResourceId: modNetworking.outputs.redisCacheSubnetResourceId
     parHubVnetResourceId: modNetworking.outputs.virtualNetworkResourceId
     parSpokeVnetResourceId: resourceId(subscription().subscriptionId, parSpokeResourceGroupName, 'Microsoft.Network/virtualNetworks', parSpokeVirtualNetworkName)
@@ -151,6 +155,7 @@ module modAppGateway 'modules/app-gateway.bicep' = {
   params: {
     parAppGatewayName: parAppGatewayName
     parLocation: parLocation
+    parSku: parAppGatewaySku
     parContainerAppFqdn: parContainerAppFqdn
     parCustomDomain: parCustomDomain
     parSpokeKeyVaultName: parSpokeKeyVaultName
@@ -173,6 +178,7 @@ module modApim 'modules/apim.bicep' = {
   params: {
     parApimName: parApimName
     parLocation: parLocation
+    parSku: parApimSku
     parPublisherEmail: parApimPublisherEmail
     parPublisherName: parApimPublisherName
     parFoundryEndpoint: parFoundryEndpoint

@@ -4,6 +4,7 @@ targetScope = 'resourceGroup'
 // Parameters
 param parAppGatewayName string
 param parLocation string
+param parSku string
 param parContainerAppFqdn string
 param parCustomDomain string
 param parSpokeKeyVaultName string
@@ -20,7 +21,7 @@ module modAppGateway 'br/public:avm/res/network/application-gateway:0.6.0' = {
   params: {
     name: parAppGatewayName
     location: parLocation
-    sku: 'Standard_v2'
+    sku: parSku
     capacity: 1
     zones: []
     managedIdentities: !empty(parCustomDomain) ? {

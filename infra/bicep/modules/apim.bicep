@@ -4,6 +4,7 @@ targetScope = 'resourceGroup'
 // Parameters
 param parApimName string
 param parLocation string
+param parSku string
 param parPublisherEmail string
 param parPublisherName string
 param parFoundryEndpoint string
@@ -26,7 +27,7 @@ module modApim 'br/public:avm/res/api-management/service:0.12.0' = {
     publisherEmail: parPublisherEmail
     publisherName: parPublisherName
     location: parLocation
-    sku: 'Developer'
+    sku: parSku
     virtualNetworkType: 'Internal'
     subnetResourceId: parApimSubnetResourceId
     publicIpAddressResourceId: parApimPublicIpResourceId
@@ -107,10 +108,14 @@ module modApim 'br/public:avm/res/api-management/service:0.12.0' = {
         workspaceResourceId: parLogAnalyticsWorkspaceResourceId
         logAnalyticsDestinationType: 'Dedicated'
         logCategoriesAndGroups: [
-          {
+            {
+            category: 'GatewayLogs'
+            enabled: true
+            }
+            {
             category: 'GatewayLlmLogs'
             enabled: true
-          }
+            }
         ]
       }
     ]
@@ -147,6 +152,35 @@ module modApimMetricsPublisherRbac 'br/public:avm/ptn/authorization/resource-rol
     roleDefinitionId: '3913510d-42f4-4e42-8a64-420c390055eb' // Monitoring Metrics Publisher
     resourceId: parAppInsightsResourceId
   }
+}
+
+// Configure LLM logging for the openai API diagnostic
+resource resOpenAIDiagnosticLLMLogging 'Microsoft.ApiManagement/service/apis/diagnostics@2024-06-01-preview' = {
+  name: '${parApimName}/openai/applicationinsights'
+  properties: {
+    alwaysLog: 'allErrors'
+    logClientIp: true
+    httpCorrelationProtocol: 'W3C'
+    verbosity: 'information'
+    loggerId: resourceId('Microsoft.ApiManagement/service/loggers', parApimName, parAppInsightsName)
+    metrics: true
+    sampling: {
+      samplingType: 'fixed'
+      percentage: 100
+    }
+    largeLanguageModel: {
+      logs: 'enabled'
+      requests: {
+        maxSizeInBytes: 32768
+        messages: 'all'
+      }
+      responses: {
+        maxSizeInBytes: 262144
+        messages: 'all'
+      }
+    }
+  }
+  dependsOn: [modApim]
 }
 
 // Outputs

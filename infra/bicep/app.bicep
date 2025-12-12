@@ -347,8 +347,8 @@ module modContainerApp 'br/public:avm/res/app/container-app:0.19.0' = {
         name: 'open-webui-container'
         image: 'ghcr.io/open-webui/open-webui:main'
         resources: {
-          cpu: 2
-          memory: '4Gi'
+          cpu: json('0.5')
+          memory: '1Gi'
         }
         env: [
           {

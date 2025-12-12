@@ -6,12 +6,12 @@ targetScope = 'resourceGroup'
 // Parameters
 param parCacheName string
 param parLocation string
+param parSkuName string
 param parSubnetResourceId string
 param parHubVnetResourceId string
 param parSpokeVnetResourceId string
 param parTags object = {}
 
-// Private DNS Zone for Redis Cache (must be created first for private endpoint)
 module modPrivateDnsZone 'br/public:avm/res/network/private-dns-zone:0.8.0' = {
   params: {
     name: 'privatelink.redis.cache.windows.net'
@@ -31,14 +31,14 @@ module modPrivateDnsZone 'br/public:avm/res/network/private-dns-zone:0.8.0' = {
     ]
   }
 }
-
+// Doesn't support Entra auth yet, really..? https://learn.microsoft.com/en-us/azure/api-management/api-management-howto-cache-external
 // Redis Cache for APIM
 module modRedisCache 'br/public:avm/res/cache/redis:0.16.4' = {
   params: {
     name: parCacheName
     location: parLocation
     tags: parTags
-    skuName: 'Standard'
+    skuName: parSkuName
     capacity: 1
     enableNonSslPort: false
     minimumTlsVersion: '1.2'
