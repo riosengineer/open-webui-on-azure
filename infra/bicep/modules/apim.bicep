@@ -123,10 +123,10 @@ module modApim 'br/public:avm/res/api-management/service:0.12.0' = {
     ] : []
     caches: !empty(parRedisCacheConnectionString) ? [
       {
-        name: 'ai-cache'
+        name: 'default'
         description: 'External Redis cache for AI Gateway semantic caching'
         connectionString: parRedisCacheConnectionString
-        useFromLocation: 'default'
+        useFromLocation: 'uksouth'
       }
     ] : []
   }

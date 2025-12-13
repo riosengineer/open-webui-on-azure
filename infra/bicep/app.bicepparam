@@ -103,4 +103,16 @@ param parFoundryDeployments = [
       capacity: 100
     }
   }
+  {
+    name: 'text-embedding-3-large'
+    model: {
+      format: 'OpenAI'
+      name: 'text-embedding-3-large'
+      version: '1'
+    }
+    sku: {
+      name: 'GlobalStandard'
+      capacity: 100
+    }
+  }
 ]
