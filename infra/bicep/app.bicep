@@ -1,6 +1,14 @@
 targetScope = 'subscription'
 // ms graph extensibility
 extension 'br:mcr.microsoft.com/bicep/extensions/microsoftgraph/v1.0:1.0.0'
+
+// ========== Existing Resources ==========
+// Reference existing APIM to get its managed identity principal ID
+resource resApimExisting 'Microsoft.ApiManagement/service@2023-05-01-preview' existing = if (!empty(parApimName)) {
+  scope: resourceGroup(parHubResourceGroupName)
+  name: parApimName
+}
+
 // Parameters
 param parLocation string = 'uksouth'
 param parResourceGroupName string
@@ -10,8 +18,7 @@ param parHubResourceGroupName string
 param parHubVirtualNetworkName string
 param parCustomDomain string
 param parCertificateName string
-param parApimPrincipalId string
-param parApimGatewayUrl string
+param parApimName string
 param parApimAllowedIpAddresses array = []
 @description('List of allowed IP addresses for Container App ingress (CIDR format). Leave empty to allow all traffic.')
 param parContainerAppAllowedIpAddresses array = []
@@ -401,7 +408,7 @@ module modContainerApp 'br/public:avm/res/app/container-app:0.19.0' = {
           }
           {
             name: 'OPENAI_API_BASE_URL'
-            value: '${parApimGatewayUrl}/openai/v1'
+            value: 'https://${parApimName}.azure-api.net/openai/v1'
           }
           {
             name: 'ENV'
@@ -566,9 +573,9 @@ module modFoundry 'br/public:avm/res/cognitive-services/account:0.14.0' = {
           roleDefinitionIdOrName: '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'
         }
       ],
-      !empty(parApimPrincipalId) ? [
+      !empty(parApimName) ? [
         {
-          principalId: parApimPrincipalId
+          principalId: resApimExisting.identity.principalId
           principalType: 'ServicePrincipal'
           roleDefinitionIdOrName: '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'
         }
