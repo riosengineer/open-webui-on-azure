@@ -14,7 +14,7 @@ module modLogAnalyticsWorkspace 'br/public:avm/res/operational-insights/workspac
     dataRetention: 30
     skuName: 'PerGB2018'
     features: {
-      disableLocalAuth: false
+      disableLocalAuth: true
     }
   }
 }
@@ -24,7 +24,7 @@ module modAppInsights 'br/public:avm/res/insights/component:0.7.0' = {
   params: {
     name: '${parNamePrefix}-appi'
     workspaceResourceId: modLogAnalyticsWorkspace.outputs.resourceId
-    disableLocalAuth: false
+    disableLocalAuth: true
     applicationType: 'web'
     location: parLocation
     kind: 'web'

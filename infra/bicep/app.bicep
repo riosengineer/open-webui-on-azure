@@ -5,17 +5,8 @@ extension 'br:mcr.microsoft.com/bicep/extensions/microsoftgraph/v1.0:1.0.0'
 // ========== Type Imports ==========
 import { FoundryDeploymentType, TagsType } from './shared/types.bicep'
 
-// ========== Existing Resources ==========
-// Reference existing APIM to get its managed identity principal ID
-resource resApimExisting 'Microsoft.ApiManagement/service@2023-05-01-preview' existing = if (!empty(parApimName)) {
-  scope: resourceGroup(parHubResourceGroupName)
-  name: parApimName
-}
-
 // ========== Parameters ==========
-@description('Azure region for resource deployment')
 param parLocation string
-
 param parResourceGroupName string
 param parVirtualNetworkAddressPrefix string
 param parAcaSubnetAddressPrefix string
@@ -25,10 +16,9 @@ param parCustomDomain string
 param parCertificateName string
 param parApimName string
 param parApimAllowedIpAddresses array = []
-
-@description('List of allowed IP addresses for Container App ingress (CIDR format). Leave empty to allow all traffic.')
+@secure()
+param parCertificatePfxBase64 string = ''
 param parContainerAppAllowedIpAddresses array = []
-
 param parFoundryDeployments FoundryDeploymentType[]
 param parTags TagsType
 // Variables
@@ -41,6 +31,14 @@ var varIpSecurityRestrictions = [for ip in parContainerAppAllowedIpAddresses: {
   action: 'Allow'
 }]
 
+// ========== Existing Resources ==========
+// Reference existing APIM to get its managed identity principal ID
+resource resApimExisting 'Microsoft.ApiManagement/service@2023-05-01-preview' existing = if (!empty(parApimName)) {
+  scope: resourceGroup(parHubResourceGroupName)
+  name: parApimName
+}
+
+// MARK: - Entra ID App Registration
 resource resEntraIdApp 'Microsoft.Graph/applications@v1.0' = {
   displayName: varAppRegistrationName
   uniqueName: varAppRegistrationName
@@ -133,11 +131,13 @@ resource resEntraIdApp 'Microsoft.Graph/applications@v1.0' = {
   ]
 }
 
+// MARK: - Entra ID Service Principal
 resource resEntraIdServicePrincipal 'Microsoft.Graph/servicePrincipals@v1.0' = {
   appId: resEntraIdApp.appId
 
 }
 
+// MARK: - Resource Group
 module modResourceGroup 'br/public:avm/res/resources/resource-group:0.4.2' = {
   params: {
     name: parResourceGroupName
@@ -146,6 +146,7 @@ module modResourceGroup 'br/public:avm/res/resources/resource-group:0.4.2' = {
   }
 }
 
+// MARK: - Network Security Group
 module nsgContainerApp 'br/public:avm/res/network/network-security-group:0.5.2' = {
   scope: resourceGroup(parResourceGroupName)
   params: {
@@ -155,6 +156,7 @@ module nsgContainerApp 'br/public:avm/res/network/network-security-group:0.5.2' 
   dependsOn: [modResourceGroup]
 }
 
+// MARK: - Virtual Network
 module modVirtualNetwork 'br/public:avm/res/network/virtual-network:0.7.1' = {
   scope: resourceGroup(parResourceGroupName)
   params: {
@@ -187,6 +189,7 @@ module modVirtualNetwork 'br/public:avm/res/network/virtual-network:0.7.1' = {
   dependsOn: [modResourceGroup]
 }
 
+// MARK: - Log Analytics Workspace
 module modLogAnalyticsWorkspace 'br/public:avm/res/operational-insights/workspace:0.13.0' = {
   scope: resourceGroup(parResourceGroupName)
   params: {
@@ -204,6 +207,7 @@ module modLogAnalyticsWorkspace 'br/public:avm/res/operational-insights/workspac
   ]
 }
 
+// MARK: - Application Insights
 module modAppInsights 'br/public:avm/res/insights/component:0.7.1' = {
   scope: resourceGroup(parResourceGroupName)
   params: {
@@ -217,6 +221,7 @@ module modAppInsights 'br/public:avm/res/insights/component:0.7.1' = {
   dependsOn: [modResourceGroup]
 }
 
+// MARK: - Key Vault
 module modKeyVault 'br/public:avm/res/key-vault/vault:0.13.3' = {
   scope: resourceGroup(parResourceGroupName)
   params: {
@@ -227,10 +232,18 @@ module modKeyVault 'br/public:avm/res/key-vault/vault:0.13.3' = {
     enableRbacAuthorization: true
     enableSoftDelete: true
     softDeleteRetentionInDays: 7
+    secrets: !empty(parCertificatePfxBase64) ? [
+      {
+        name: parCertificateName
+        value: parCertificatePfxBase64
+        contentType: 'application/x-pkcs12'
+      }
+    ] : []
   }
   dependsOn: [modResourceGroup]
 }
 
+// MARK: - Storage Account
 module modStorageAccount 'br/public:avm/res/storage/storage-account:0.29.0' = {
   scope: resourceGroup(parResourceGroupName)
   params: {
@@ -278,6 +291,7 @@ module modStorageAccount 'br/public:avm/res/storage/storage-account:0.29.0' = {
   dependsOn: [modResourceGroup]
 }
 
+// MARK: - Container App Environment Managed Identity
 module modEnvIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.1' = {
   scope: resourceGroup(parResourceGroupName)
   params: {
@@ -287,6 +301,7 @@ module modEnvIdentity 'br/public:avm/res/managed-identity/user-assigned-identity
   dependsOn: [modResourceGroup]
 }
 
+// MARK: - RBAC for Environment Identity
 module modEnvKeyVaultRbac 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = {
   scope: resourceGroup(parResourceGroupName)
   params: {
@@ -298,6 +313,7 @@ module modEnvKeyVaultRbac 'br/public:avm/ptn/authorization/resource-role-assignm
   }
 }
 
+// MARK: - Container App Environment
 module modContainerAppEnv 'br/public:avm/res/app/managed-environment:0.11.3' = {
   scope: resourceGroup(parResourceGroupName)
   params: {
@@ -333,6 +349,7 @@ module modContainerAppEnv 'br/public:avm/res/app/managed-environment:0.11.3' = {
   dependsOn: [modResourceGroup, modEnvKeyVaultRbac]
 }
 
+// MARK: - Container App
 module modContainerApp 'br/public:avm/res/app/container-app:0.19.0' = {
   scope: resourceGroup(parResourceGroupName)
   params: {
@@ -526,6 +543,7 @@ module modContainerApp 'br/public:avm/res/app/container-app:0.19.0' = {
   dependsOn: [modResourceGroup]
 }
 
+// MARK: - RBAC for Container App
 module modContainerAppKeyVaultRbac 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = {
   scope: resourceGroup(parResourceGroupName)
   params: {
@@ -537,6 +555,7 @@ module modContainerAppKeyVaultRbac 'br/public:avm/ptn/authorization/resource-rol
   }
 }
 
+// MARK: - Microsoft Foundry (AI Services)
 module modFoundry 'br/public:avm/res/cognitive-services/account:0.14.0' = {
   scope: resourceGroup(parResourceGroupName)
   params: {
@@ -583,6 +602,7 @@ module modFoundry 'br/public:avm/res/cognitive-services/account:0.14.0' = {
   dependsOn: [modResourceGroup]
 }
 
+// MARK: - Outputs
 output outContainerAppFqdn string = modContainerApp.outputs.fqdn
 output outContainerAppResourceId string = modContainerApp.outputs.resourceId
 output outContainerAppEnvDefaultDomain string = modContainerAppEnv.outputs.defaultDomain

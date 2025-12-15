@@ -27,6 +27,14 @@ Thumbs.db
 # Bicep
 *.bicepparam.local
 
+# Certificates and secrets (NEVER commit private keys!)
+*.pfx
+*.p12
+*.key
+*.pem
+*.b64
+*.cer
+
 # Environment files
 .env
 .env.local

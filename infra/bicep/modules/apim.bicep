@@ -11,7 +11,7 @@ param parFoundryEndpoint string
 param parOpenWebUIAppId string
 param parAppInsightsName string
 param parAppInsightsResourceId string
-param parAppInsightsInstrumentationKey string
+param parAppInsightsConnectionString string
 param parLogAnalyticsWorkspaceResourceId string
 param parApimSubnetResourceId string
 param parApimPublicIpResourceId string
@@ -82,7 +82,8 @@ module modApim 'br/public:avm/res/api-management/service:0.12.0' = {
         description: 'Logger for Application Insights'
         targetResourceId: parAppInsightsResourceId
         credentials: {
-          instrumentationKey: parAppInsightsInstrumentationKey
+          connectionString: parAppInsightsConnectionString
+          identityClientId: 'systemAssigned'
         }
       }
     ]

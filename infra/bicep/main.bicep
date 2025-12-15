@@ -5,7 +5,7 @@ extension 'br:mcr.microsoft.com/bicep/extensions/microsoftgraph/v1.0:1.0.0'
 // ========== Type Imports ==========
 import { TagsType } from './shared/types.bicep'
 
-// ========== Parameters ==========
+// ========== MARK: Parameters ==========
 param parLocation string
 param parResourceGroupName string
 param parAppGatewayName string
@@ -31,20 +31,16 @@ param parTrustedRootCertificateSecretName string
 param parSslCertificateSecretName string
 param parFoundryEndpoint string
 param parTags TagsType
+@description('Optional: OpenWebUI App ID from app.bicep deployment. Leave empty for initial deployment.')
+param parOpenWebUIAppId string = ''
 
-// ========== Existing Resources ==========
-// Reference existing Entra ID app registration created by app.bicep
-resource resEntraIdAppExisting 'Microsoft.Graph/applications@v1.0' existing = {
-  uniqueName: 'app-open-webui'
-}
 
-// ========== Variables ==========
+// ========== MARK: Variables ==========
 var varOpenWebUi = 'open-webui'
 var varNsgRules = loadJsonContent('./shared/nsg-rules.json')
 var varContainerAppEnvDefaultDomain = !empty(parContainerAppFqdn) ? join(skip(split(parContainerAppFqdn, '.'), 1), '.') : ''
 var varContainerAppName = !empty(parContainerAppFqdn) ? split(parContainerAppFqdn, '.')[0] : ''
 var varTrustedRootCertificateBase64 = loadTextContent('./cert/cloudflare-origin-ca.cer')
-
 // Public IP configurations for loop deployment
 var varPublicIpConfigs = [
   {
@@ -59,7 +55,7 @@ var varPublicIpConfigs = [
   }
 ]
 
-// ========== Resource Group =========
+// MARK: - Resource Group
 module modResourceGroup 'br/public:avm/res/resources/resource-group:0.4.2' = {
   params: {
     name: parResourceGroupName
@@ -68,7 +64,7 @@ module modResourceGroup 'br/public:avm/res/resources/resource-group:0.4.2' = {
   }
 }
 
-// ========== Networking ==========
+// MARK: - Networking
 module modNetworking 'modules/networking.bicep' = {
   scope: resourceGroup(parResourceGroupName)
   params: {
@@ -88,7 +84,7 @@ module modNetworking 'modules/networking.bicep' = {
   dependsOn: [modResourceGroup]
 }
 
-// ========== Monitoring ==========
+// MARK: - Monitoring
 module modMonitoring 'modules/monitoring.bicep' = {
   scope: resourceGroup(parResourceGroupName)
   params: {
@@ -98,7 +94,7 @@ module modMonitoring 'modules/monitoring.bicep' = {
   dependsOn: [modResourceGroup]
 }
 
-// ========== Security (Identities & Key Vaults) ==========
+// MARK: - Security (Identities & Key Vaults)
 module modSecurity 'modules/security.bicep' = {
   scope: resourceGroup(parResourceGroupName)
   params: {
@@ -111,7 +107,7 @@ module modSecurity 'modules/security.bicep' = {
   dependsOn: [modResourceGroup]
 }
 
-// ========== RBAC for Spoke Key Vault ==========
+// MARK: - RBAC for Spoke Key Vault
 module modAppGatewaySpokeKeyVaultRbac 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = if (!empty(parCustomDomain) && !empty(parSpokeKeyVaultName)) {
   scope: resourceGroup(parSpokeResourceGroupName)
   params: {
@@ -121,7 +117,7 @@ module modAppGatewaySpokeKeyVaultRbac 'br/public:avm/ptn/authorization/resource-
   }
 }
 
-// ========== Public IP Addresses ==========
+// MARK: - Public IP Addresses
 module modPublicIps 'br/public:avm/res/network/public-ip-address:0.8.0' = [for config in varPublicIpConfigs: {
   scope: resourceGroup(parResourceGroupName)
   name: 'pip-${config.key}'
@@ -138,7 +134,7 @@ module modPublicIps 'br/public:avm/res/network/public-ip-address:0.8.0' = [for c
   dependsOn: [modResourceGroup]
 }]
 
-// ========== Application Gateway ==========
+// MARK: - Application Gateway
 module modAppGateway 'modules/app-gateway.bicep' = {
   scope: resourceGroup(parResourceGroupName)
   params: {
@@ -161,7 +157,7 @@ module modAppGateway 'modules/app-gateway.bicep' = {
   ]
 }
 
-// ========== API Management ==========
+// MARK: - API Management
 module modApim 'modules/apim.bicep' = {
   scope: resourceGroup(parResourceGroupName)
   params: {
@@ -171,10 +167,10 @@ module modApim 'modules/apim.bicep' = {
     parPublisherEmail: parApimPublisherEmail
     parPublisherName: parApimPublisherName
     parFoundryEndpoint: parFoundryEndpoint
-    parOpenWebUIAppId: resEntraIdAppExisting.appId
+    parOpenWebUIAppId: !empty(parOpenWebUIAppId) ? parOpenWebUIAppId : ''
     parAppInsightsName: modMonitoring.outputs.appInsightsName
     parAppInsightsResourceId: modMonitoring.outputs.appInsightsResourceId
-    parAppInsightsInstrumentationKey: modMonitoring.outputs.appInsightsInstrumentationKey
+    parAppInsightsConnectionString: modMonitoring.outputs.appInsightsConnectionString
     parLogAnalyticsWorkspaceResourceId: modMonitoring.outputs.logAnalyticsWorkspaceResourceId
     parApimSubnetResourceId: modNetworking.outputs.apimSubnetResourceId
     parApimPublicIpResourceId: modPublicIps[1].outputs.resourceId
@@ -184,7 +180,7 @@ module modApim 'modules/apim.bicep' = {
   ]
 }
 
-// ========== APIM Private DNS A Record (after APIM deployment) ==========
+// MARK: - APIM Private DNS A Record
 // Get existing APIM resource to read its private IP
 resource resApimExisting 'Microsoft.ApiManagement/service@2023-05-01-preview' existing = {
   scope: resourceGroup(parResourceGroupName)
@@ -193,7 +189,6 @@ resource resApimExisting 'Microsoft.ApiManagement/service@2023-05-01-preview' ex
 
 module modApimDnsRecord 'br/public:avm/res/network/private-dns-zone:0.8.0' = {
   scope: resourceGroup(parResourceGroupName)
-  name: 'apimDnsRecord'
   params: {
     name: modNetworking.outputs.apimPrivateDnsZoneName
     location: 'global'
@@ -209,7 +204,7 @@ module modApimDnsRecord 'br/public:avm/res/network/private-dns-zone:0.8.0' = {
   }
 }
 
-// ========== Outputs ==========
+// MARK: - Outputs
 output outApimName string = modApim.outputs.name
 output outApimResourceId string = modApim.outputs.resourceId
 output outApimGatewayUrl string = modApim.outputs.gatewayUrl

@@ -35,17 +35,21 @@ module modHubKeyVault 'br/public:avm/res/key-vault/vault:0.13.3' = if (!empty(pa
 }
 
 // RBAC for App Gateway to access Hub Key Vault
+resource resHubKeyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = if (!empty(parCustomDomain)) {
+  name: 'kv-${parAppGatewayName}'
+}
+
 module modAppGatewayKeyVaultRbac 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = if (!empty(parCustomDomain)) {
   params: {
-    principalId: modAppGatewayIdentity!.outputs!.principalId
-    resourceId: modHubKeyVault!.outputs!.resourceId
+    principalId: modAppGatewayIdentity.outputs.principalId
+    resourceId: resHubKeyVault.id
     roleDefinitionId: '4633458b-17de-408a-b874-0445c86b69e6' // Key Vault Secrets User
   }
 }
 
 // Outputs
-output userAssignedIdentityResourceId string = !empty(parCustomDomain) ? modAppGatewayIdentity!.outputs!.resourceId : ''
-output userAssignedIdentityPrincipalId string = !empty(parCustomDomain) ? modAppGatewayIdentity!.outputs!.principalId : ''
-output hubKeyVaultResourceId string = !empty(parCustomDomain) ? modHubKeyVault!.outputs!.resourceId : ''
-output hubKeyVaultUri string = !empty(parCustomDomain) ? modHubKeyVault!.outputs!.uri : ''
-output hubKeyVaultName string = !empty(parCustomDomain) ? modHubKeyVault!.outputs!.name : ''
+output userAssignedIdentityResourceId string = !empty(parCustomDomain) ? modAppGatewayIdentity!.outputs.resourceId : ''
+output userAssignedIdentityPrincipalId string = !empty(parCustomDomain) ? modAppGatewayIdentity!.outputs.principalId : ''
+output hubKeyVaultResourceId string = !empty(parCustomDomain) ? modHubKeyVault!.outputs.resourceId : ''
+output hubKeyVaultUri string = !empty(parCustomDomain) ? modHubKeyVault!.outputs.uri : ''
+output hubKeyVaultName string = !empty(parCustomDomain) ? modHubKeyVault!.outputs.name : ''
