@@ -19,7 +19,7 @@
       <dimension name="Subscription ID" />
       <dimension name="API ID" />
     </llm-emit-token-metric>
-    <!-- AI Gateway: Token rate limiting - 50k TPM aligns with Azure OpenAI Foundry standard deployments, prevents runaway costs while generous for team usage -->
+    <!-- AI Gateway: Token rate limiting - 50k TPM aligns with Azure OpenAI Foundry standard deployments -->
     <llm-token-limit tokens-per-minute="50000" estimate-prompt-tokens="true" counter-key="@(context.Subscription.Id)" tokens-consumed-header-name="consumed-tokens" remaining-tokens-header-name="remaining-tokens" />
     <set-backend-service backend-id="foundry-backend" />
     <authentication-managed-identity resource="https://cognitiveservices.azure.com" />
