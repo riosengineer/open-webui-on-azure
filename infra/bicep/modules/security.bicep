@@ -8,6 +8,11 @@ param parTrustedRootCertificateSecretName string
 param parTrustedRootCertificateBase64 string
 param parCustomDomain string
 
+// Variables
+var varRoleDefinitions = {
+  keyVaultSecretsUser: '4633458b-17de-408a-b874-0445c86b69e6'
+}
+
 // Managed Identity for Application Gateway
 module modAppGatewayIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.1' = if (!empty(parCustomDomain)) {
   params: {
@@ -43,7 +48,7 @@ module modAppGatewayKeyVaultRbac 'br/public:avm/ptn/authorization/resource-role-
   params: {
     principalId: modAppGatewayIdentity.outputs.principalId
     resourceId: resHubKeyVault.id
-    roleDefinitionId: '4633458b-17de-408a-b874-0445c86b69e6' // Key Vault Secrets User
+    roleDefinitionId: varRoleDefinitions.keyVaultSecretsUser
   }
 }
 

@@ -16,6 +16,11 @@ param parLogAnalyticsWorkspaceResourceId string
 param parApimSubnetResourceId string
 param parApimPublicIpResourceId string
 
+// Variables
+var varRoleDefinitions = {
+  monitoringMetricsPublisher: '3913510d-42f4-4e42-8a64-420c390055eb'
+}
+
 // Load policy files
 var varOpenAIPolicyXml = loadTextContent('../policies/openai-api.xml')
 
@@ -129,7 +134,7 @@ module modApimMetricsPublisherRbac 'br/public:avm/ptn/authorization/resource-rol
   params: {
     principalId: modApim.outputs.systemAssignedMIPrincipalId!
     principalType: 'ServicePrincipal'
-    roleDefinitionId: '3913510d-42f4-4e42-8a64-420c390055eb' // Monitoring Metrics Publisher
+    roleDefinitionId: varRoleDefinitions.monitoringMetricsPublisher
     resourceId: parAppInsightsResourceId
   }
 }

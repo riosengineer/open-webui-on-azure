@@ -30,6 +30,10 @@ var varIpSecurityRestrictions = [for ip in parContainerAppAllowedIpAddresses: {
   ipAddressRange: ip
   action: 'Allow'
 }]
+var varRoleDefinitions = {
+  keyVaultSecretsUser: '4633458b-17de-408a-b874-0445c86b69e6'
+  cognitiveServicesUser: '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'
+}
 
 // ========== Existing Resources ==========
 // Reference existing APIM to get its managed identity principal ID
@@ -147,7 +151,7 @@ module modResourceGroup 'br/public:avm/res/resources/resource-group:0.4.2' = {
 }
 
 // MARK: - Network Security Group
-module nsgContainerApp 'br/public:avm/res/network/network-security-group:0.5.2' = {
+module modNsgContainerApp 'br/public:avm/res/network/network-security-group:0.5.2' = {
   scope: resourceGroup(parResourceGroupName)
   params: {
     name: '${varOpenWebUiApp}-aca-nsg'
@@ -168,7 +172,7 @@ module modVirtualNetwork 'br/public:avm/res/network/virtual-network:0.7.1' = {
       {
         name: '${varOpenWebUiApp}-aca-subnet'
         addressPrefix: parAcaSubnetAddressPrefix
-        networkSecurityGroupResourceId: nsgContainerApp.outputs.resourceId
+        networkSecurityGroupResourceId: modNsgContainerApp.outputs.resourceId
         serviceEndpoints: [
           'Microsoft.Storage'
           'Microsoft.CognitiveServices'
@@ -308,7 +312,7 @@ module modEnvKeyVaultRbac 'br/public:avm/ptn/authorization/resource-role-assignm
     principalId: modEnvIdentity.outputs.principalId
     roleName: 'Key Vault Secrets User'
     resourceId: modKeyVault.outputs.resourceId
-    roleDefinitionId: '4633458b-17de-408a-b874-0445c86b69e6'
+    roleDefinitionId: varRoleDefinitions.keyVaultSecretsUser
     principalType: 'ServicePrincipal'
   }
 }
@@ -550,7 +554,7 @@ module modContainerAppKeyVaultRbac 'br/public:avm/ptn/authorization/resource-rol
     principalId: modContainerApp.outputs.systemAssignedMIPrincipalId!
     roleName: 'Key Vault Secrets User'
     resourceId: modKeyVault.outputs.resourceId
-    roleDefinitionId: '4633458b-17de-408a-b874-0445c86b69e6'
+    roleDefinitionId: varRoleDefinitions.keyVaultSecretsUser
     principalType: 'ServicePrincipal'
   }
 }
@@ -587,14 +591,14 @@ module modFoundry 'br/public:avm/res/cognitive-services/account:0.14.0' = {
         {
           principalId: modContainerApp.outputs.systemAssignedMIPrincipalId!
           principalType: 'ServicePrincipal'
-          roleDefinitionIdOrName: '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'
+          roleDefinitionIdOrName: varRoleDefinitions.cognitiveServicesUser
         }
       ],
       !empty(parApimName) ? [
         {
           principalId: resApimExisting!.identity.principalId!
           principalType: 'ServicePrincipal'
-          roleDefinitionIdOrName: '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'
+          roleDefinitionIdOrName: varRoleDefinitions.cognitiveServicesUser
         }
       ] : []
     )

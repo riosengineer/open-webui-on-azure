@@ -41,6 +41,9 @@ var varNsgRules = loadJsonContent('./shared/nsg-rules.json')
 var varContainerAppEnvDefaultDomain = !empty(parContainerAppFqdn) ? join(skip(split(parContainerAppFqdn, '.'), 1), '.') : ''
 var varContainerAppName = !empty(parContainerAppFqdn) ? split(parContainerAppFqdn, '.')[0] : ''
 var varTrustedRootCertificateBase64 = loadTextContent('./cert/cloudflare-origin-ca.cer')
+var varRoleDefinitions = {
+  keyVaultSecretsUser: '4633458b-17de-408a-b874-0445c86b69e6'
+}
 // Public IP configurations for loop deployment
 var varPublicIpConfigs = [
   {
@@ -113,7 +116,7 @@ module modAppGatewaySpokeKeyVaultRbac 'br/public:avm/ptn/authorization/resource-
   params: {
     principalId: modSecurity.outputs.userAssignedIdentityPrincipalId
     resourceId: resourceId(subscription().subscriptionId, parSpokeResourceGroupName, 'Microsoft.KeyVault/vaults', parSpokeKeyVaultName)
-    roleDefinitionId: '4633458b-17de-408a-b874-0445c86b69e6' // Key Vault Secrets User
+    roleDefinitionId: varRoleDefinitions.keyVaultSecretsUser
   }
 }
 
