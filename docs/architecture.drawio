@@ -4,9 +4,11 @@
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
-                <mxCell id="bg" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FAFBFC;strokeColor=none;" parent="1" vertex="1">
-                    <mxGeometry y="-5" width="1300" height="750" as="geometry"/>
-                </mxCell>
+                <UserObject label="&#xa;&lt;a href=&quot;https://openwebui.com/logo.png&quot;&gt;logo.png (1000×1000)&lt;/a&gt;&#xa;&#xa;" link="&#xa;&lt;a href=&quot;https://openwebui.com/logo.png&quot;&gt;logo.png (1000×1000)&lt;/a&gt;&#xa;&#xa;" id="bg">
+                    <mxCell style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FAFBFC;strokeColor=none;" parent="1" vertex="1">
+                        <mxGeometry y="-5" width="1300" height="750" as="geometry"/>
+                    </mxCell>
+                </UserObject>
                 <mxCell id="title" value="&lt;span&gt;Open WebUI on Azure&lt;/span&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=26;fontStyle=1;fontColor=#1a1a1a;" parent="1" vertex="1">
                     <mxGeometry x="450" y="15" width="400" height="35" as="geometry"/>
                 </mxCell>
@@ -254,7 +256,7 @@
                 <mxCell id="10" value="" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/general/Subscriptions.svg;" vertex="1" parent="1">
                     <mxGeometry x="972" y="79.99999999999999" width="24" height="38.73" as="geometry"/>
                 </mxCell>
-                <mxCell id="11" value="&lt;div&gt;&lt;span style=&quot;color: rgb(63, 63, 63); font-weight: normal; background-color: transparent;&quot;&gt;gpt-4o-mini&lt;/span&gt;&lt;/div&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;&lt;font&gt;gpt-4o&lt;/font&gt;&lt;/span&gt;&lt;div&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;&lt;font&gt;grok-4-fast-reasoning&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;&lt;font&gt;Mistral-Large-3&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;&lt;font&gt;Llama-4-Maverick&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;&lt;font&gt;DeepSeek-V3.1&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=10;fontStyle=1;fontColor=#333333;" vertex="1" parent="1">
+                <mxCell id="11" value="&lt;div&gt;&lt;span style=&quot;font-weight: normal; background-color: transparent;&quot;&gt;&lt;font style=&quot;color: rgb(85, 85, 85);&quot;&gt;gpt-4o-mini&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;&lt;font style=&quot;color: rgb(85, 85, 85);&quot;&gt;gpt-4o&lt;/font&gt;&lt;/span&gt;&lt;div&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;&lt;font style=&quot;color: rgb(85, 85, 85);&quot;&gt;grok-4-fast-reasoning&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;&lt;font style=&quot;color: rgb(85, 85, 85);&quot;&gt;Mistral-Large-3&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;&lt;font style=&quot;color: rgb(85, 85, 85);&quot;&gt;Llama-4-Maverick&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;&lt;font style=&quot;color: rgb(85, 85, 85);&quot;&gt;DeepSeek-V3.1&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=10;fontStyle=1;fontColor=#333333;" vertex="1" parent="1">
                     <mxGeometry x="766" y="527.32" width="100" height="87.37" as="geometry"/>
                 </mxCell>
                 <mxCell id="12" value="" style="endArrow=blockThin;endFill=1;html=1;strokeWidth=1;strokeColor=#007FFF;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;curved=0;dashed=1;" edge="1" parent="1" source="5" target="11">
