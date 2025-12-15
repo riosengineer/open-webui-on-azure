@@ -27,7 +27,7 @@ Thumbs.db
 # Bicep
 *.bicepparam.local
 
-# Certificates and secrets (NEVER commit private keys!)
+# Certificates and secrets
 *.pfx
 *.p12
 *.key
