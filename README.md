@@ -4,12 +4,8 @@ Deploy [Open WebUI](https://github.com/open-webui/open-webui) on Azure Container
 
 ## Architecture
 
-```
-User → Cloudflare (DNS/SSL) → Application Gateway → Container App → Open WebUI (OAuth/OIDC)
-                                                                              ↓
-                                                                            APIM
-                                                                              ↓
-                                                                      Microsoft Foundry
+```markdown
+![Azure Open WebUI architecture](docs/architecture.svg)
 ```
 
 ## Features
