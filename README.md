@@ -30,9 +30,57 @@ Deploy [Open WebUI](https://github.com/open-webui/open-webui) on Azure Container
 
 ## Deployment
 
-### 1. Deploy Hub Infrastructure (APIM, Application Gateway) - Initial
+> [!IMPORTANT]
+> Before deploying, update `infra/bicep/main.bicepparam` with your values:
+> - `parApimPublisherEmail` - Your email address
+> - `parApimPublisherName` - Your name
+> - `parCustomDomain` - Your custom domain (e.g., `openwebui.example.com`)
+> - `parLocation` - Your Azure region
 
-Deploy hub infrastructure without Entra ID app validation (app doesn't exist yet):
+### 1. Deploy Spoke Infrastructure (Container Apps, Foundry)
+
+Deploy the spoke first to get Container App FQDN and Foundry endpoint:
+
+```bash
+# Create passwordless PFX and base64 encode it
+openssl pkcs12 -export \
+  -out cloudflare-origin.pfx \
+  -inkey origin.key \
+  -in origin.pem \
+  -password pass:
+
+cat cloudflare-origin.pfx | base64 -w0 > pfx.b64
+
+# Deploy spoke infrastructure
+az deployment sub create \
+  --location uksouth \
+  --template-file infra/bicep/app.bicep \
+  --parameters infra/bicep/app.bicepparam \
+  --parameters parCertificatePfxBase64="$(cat pfx.b64)"
+```
+
+**Note these outputs for Step 2:**
+- `outContainerAppFqdn` - Container App FQDN
+- `outVirtualNetworkName` - Spoke VNet name
+- `outFoundryEndpoint` - Microsoft Foundry endpoint URL
+- `outOpenWebUIAppId` - Entra ID app ID (for Step 3)
+
+**Also note the Container App Environment static IP:**
+- Azure Portal → Container Apps Environment → Properties → Static IP → Add to `parContainerAppStaticIp`
+
+**Grant Admin Consent (one-time):**
+1. Azure Portal → **Entra ID** → **App registrations** → **app-open-webui**
+2. **API permissions** → **Grant admin consent**
+
+### 2. Deploy Hub Infrastructure (APIM, Application Gateway)
+
+Update `infra/bicep/main.bicepparam` with values from Step 1:
+- `parContainerAppFqdn` - Use `outContainerAppFqdn` from Step 1
+- `parContainerAppStaticIp` - Container App Environment static IP
+- `parSpokeVirtualNetworkName` - Use `outVirtualNetworkName` from Step 1
+- `parFoundryEndpoint` - Use `outFoundryEndpoint` from Step 1
+
+Deploy hub infrastructure:
 
 ```bash
 az deployment sub create \
@@ -41,9 +89,9 @@ az deployment sub create \
   --parameters infra/bicep/main.bicepparam
 ```
 
-**Note outputs** - you'll need these for `app.bicepparam`:
-- `outVirtualNetworkName`
-- `outApimName`
+**Note outputs:**
+- `outApimName` - APIM instance name
+- `outAppGatewayPublicIp` - Application Gateway public IP
 
 **Configure DNS:**
 - Add A record pointing to Application Gateway public IP (`outAppGatewayPublicIp`)
@@ -52,43 +100,7 @@ az deployment sub create \
 - Enable proxy (orange cloud)
 - Set SSL/TLS mode to **Full (strict)**
 
-### 2. Certificate (Cloudflare example)
-
-> [!CAUTION]
-> The PFX file contains your private key. Never commit `*.pfx` or `*.b64` files to git.
-
-> [!NOTE]
-> Password-protected PFX files can't be imported via Bicep. [Certificate import operations require Azure CLI or PowerShell](https://learn.microsoft.com/en-us/azure/key-vault/certificates/faq#can-i-import-a-certificate-by-using-an-arm-template-). Use `az keyvault certificate import --password` or the Portal instead.
-
-Create a passwordless PFX and embed it as base64:
-
-```bash
-# Create passwordless PFX
-openssl pkcs12 -export \
-  -out cloudflare-origin.pfx \
-  -inkey origin.key \
-  -in origin.pem \
-  -password pass:
-
-# Base64 encode it
-cat cloudflare-origin.pfx | base64 -w0 > pfx.b64
-
-# Deploy Open WebUI App
-az deployment sub create \
-  --location uksouth \
-  --template-file infra/bicep/app.bicep \
-  --parameters infra/bicep/app.bicepparam \
-  --parameters parCertificatePfxBase64="$(cat pfx.b64)"
-```
-
-**Note the output:**
-- `outOpenWebUIAppId` - you'll need this for the next step
-
-**Grant Admin Consent (one-time):**
-1. Azure Portal → **Entra ID** → **App registrations** → **app-open-webui**
-2. **API permissions** → **Grant admin consent**
-
-### 4. Redeploy Hub with Entra App ID
+### 3. Redeploy Hub with Entra App ID
 
 Now redeploy the hub to enable APIM Entra ID token validation:
 
@@ -97,12 +109,12 @@ az deployment sub create \
   --location uksouth \
   --template-file infra/bicep/main.bicep \
   --parameters infra/bicep/main.bicepparam \
-  --parameters parOpenWebUIAppId='<appId-from-step-3>'
+  --parameters parOpenWebUIAppId='<outOpenWebUIAppId-from-step-1>'
 ```
 
 This updates APIM policies to validate Entra ID tokens from the Open WebUI app.
 
-### 5. Import OpenAPI Spec to APIM
+### 4. Import OpenAPI Spec to APIM
 
 > [!NOTE] 
 > This step is required due to Bicep's character limit on inline content. The OpenAPI spec must be imported manually via Azure CLI.

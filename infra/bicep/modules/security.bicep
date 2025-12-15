@@ -46,7 +46,7 @@ resource resHubKeyVault 'Microsoft.KeyVault/vaults@2023-07-01' existing = if (!e
 
 module modAppGatewayKeyVaultRbac 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = if (!empty(parCustomDomain)) {
   params: {
-    principalId: modAppGatewayIdentity.outputs.principalId
+    principalId: modAppGatewayIdentity!.outputs.principalId
     resourceId: resHubKeyVault.id
     roleDefinitionId: varRoleDefinitions.keyVaultSecretsUser
   }
