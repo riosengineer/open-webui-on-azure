@@ -18,8 +18,8 @@ Deploy [Open WebUI](https://github.com/open-webui/open-webui) on Azure Container
 - **Secure by default** using internal ingresses and private endpoints**
 
 > [!NOTE]
-> *Azure Container Apps still [requires Storage Account Access Keys for Azure File SMB mount?](https://learn.microsoft.com/en-us/azure/container-apps/storage-mounts-azure-files?tabs=bash#set-up-a-storage-account) :(
-> **At the time of writing the 'New' Foundry account does not support BYOD/Fully private networking yet. It has been secured via ACL for inbound networking.
+> - *Azure Container Apps still [requires Storage Account Access Keys for Azure File SMB mount?](https://learn.microsoft.com/en-us/azure/container-apps/storage-mounts-azure-files?tabs=bash#set-up-a-storage-account) :(
+> - **At the time of writing the 'New' Foundry account does not support BYOD/Fully private networking yet. It has been secured via ACL for inbound networking.
 
 ## Prerequisites
 
@@ -68,7 +68,7 @@ az deployment sub create \
 **Also note the Container App Environment static IP:**
 - Azure Portal → Container Apps Environment → Properties → Static IP → Add to `parContainerAppStaticIp`
 
-**Grant Admin Consent (one-time):**
+**Grant Admin Consent:**
 1. Azure Portal → **Entra ID** → **App registrations** → **app-open-webui**
 2. **API permissions** → **Grant admin consent**
 
@@ -90,7 +90,6 @@ az deployment sub create \
 ```
 
 **Note outputs:**
-- `outApimName` - APIM instance name
 - `outAppGatewayPublicIp` - Application Gateway public IP
 
 **Configure DNS:**
@@ -134,7 +133,7 @@ az apim api import \
 
 ## Configuration
 
-### Connect Open WebUI to Microsoft Foundry
+### Connect Open WebUI to Microsoft Foundry (via APIM)
 
 1. Navigate to Open WebUI and log in with Entra ID
 2. Go to **Admin Settings** → **Connections**
