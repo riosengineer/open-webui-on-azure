@@ -159,12 +159,12 @@ resource resOpenAIDiagnosticLLMLogging 'Microsoft.ApiManagement/service/apis/dia
     largeLanguageModel: {
       logs: 'enabled'
       requests: {
-        maxSizeInBytes: 1024
-        messages: 'none'
+        maxSizeInBytes: 32768
+        messages: 'all'
       }
       responses: {
-        maxSizeInBytes: 1024
-        messages: 'none'
+        maxSizeInBytes: 262144
+        messages: 'all'
       }
     }
   }
