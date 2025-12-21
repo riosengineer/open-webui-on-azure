@@ -1,0 +1,131 @@
+[
+  {
+    "name": "Allow-Inbound-ApiManagement",
+    "properties": {
+      "access": "Allow",
+      "priority": 100,
+      "direction": "Inbound",
+      "sourceAddressPrefix": "ApiManagement",
+      "sourcePortRange": "*",
+      "destinationAddressPrefix": "VirtualNetwork",
+      "destinationPortRange": "3443",
+      "protocol": "Tcp",
+      "description": "Management endpoint for Azure portal and PowerShell"
+    }
+  },
+  {
+    "name": "Allow-Inbound-AzureLoadBalancer",
+    "properties": {
+      "access": "Allow",
+      "priority": 110,
+      "direction": "Inbound",
+      "sourceAddressPrefix": "AzureLoadBalancer",
+      "sourcePortRange": "*",
+      "destinationAddressPrefix": "VirtualNetwork",
+      "destinationPortRange": "6390",
+      "protocol": "Tcp",
+      "description": "Azure Infrastructure Load Balancer"
+    }
+  },
+  {
+    "name": "Allow-Inbound-AzureTrafficManager",
+    "properties": {
+      "access": "Allow",
+      "priority": 120,
+      "direction": "Inbound",
+      "sourceAddressPrefix": "AzureLoadBalancer",
+      "sourcePortRange": "*",
+      "destinationAddressPrefix": "VirtualNetwork",
+      "destinationPortRange": "443",
+      "protocol": "Tcp",
+      "description": "Azure Infrastructure Load Balancer"
+    }
+  },
+  {
+    "name": "Allow-Outbound-AzureStorage",
+    "properties": {
+      "access": "Allow",
+      "priority": 130,
+      "direction": "Outbound",
+      "sourceAddressPrefix": "VirtualNetwork",
+      "sourcePortRange": "*",
+      "destinationAddressPrefix": "Storage",
+      "destinationPortRange": "443",
+      "protocol": "Tcp",
+      "description": "Dependency on Azure Storage for core service functionality"
+    }
+  },
+  {
+    "name": "Allow-Outbound-AzureSql",
+    "properties": {
+      "access": "Allow",
+      "priority": 140,
+      "direction": "Outbound",
+      "sourceAddressPrefix": "VirtualNetwork",
+      "sourcePortRange": "*",
+      "destinationAddressPrefix": "SQL",
+      "destinationPortRange": "1443",
+      "protocol": "Tcp",
+      "description": "Access to Azure SQL endpoints for core service functionality"
+    }
+  },
+  {
+    "name": "Allow-Outbound-AzureKeyVault",
+    "properties": {
+      "access": "Allow",
+      "priority": 150,
+      "direction": "Outbound",
+      "sourceAddressPrefix": "VirtualNetwork",
+      "sourcePortRange": "*",
+      "destinationAddressPrefix": "AzureKeyVault",
+      "destinationPortRange": "443",
+      "protocol": "Tcp",
+      "description": "Access to Azure Key Vault for core service functionality"
+    }
+  },
+  {
+    "name": "Allow-Outbound-AzureMonitor",
+    "properties": {
+      "access": "Allow",
+      "priority": 160,
+      "direction": "Outbound",
+      "sourceAddressPrefix": "VirtualNetwork",
+      "sourcePortRange": "*",
+      "destinationAddressPrefix": "AzureMonitor",
+      "destinationPortRanges": [
+        "1886",
+        "443"
+      ],
+      "protocol": "Tcp",
+      "description": "Publish Diagnostics Logs and Metrics, Resource Health, and Application Insights"
+    }
+  },
+  {
+    "name": "Allow-Outbound-Internet-Http",
+    "properties": {
+      "access": "Allow",
+      "priority": 170,
+      "direction": "Outbound",
+      "sourceAddressPrefix": "VirtualNetwork",
+      "sourcePortRange": "*",
+      "destinationAddressPrefix": "Internet",
+      "destinationPortRange": "80",
+      "protocol": "Tcp",
+      "description": "Validation and management of Microsoft-managed and customer-managed certificates"
+    }
+  },
+  {
+    "name": "Allow-Outbound-Internet-Https",
+    "properties": {
+      "access": "Allow",
+      "priority": 180,
+      "direction": "Outbound",
+      "sourceAddressPrefix": "VirtualNetwork",
+      "sourcePortRange": "*",
+      "destinationAddressPrefix": "Internet",
+      "destinationPortRange": "443",
+      "protocol": "Tcp",
+      "description": "Allow HTTPS to Azure services including Foundry"
+    }
+  }
+]
