@@ -14,33 +14,60 @@ param parHubResourceGroupName string
 param parHubVirtualNetworkName string
 param parCustomDomain string
 param parCertificateName string
-param parApimName string
-param parApimAllowedIpAddresses array = []
+param parApimName string = 'apim-open-webui'
 @secure()
 param parCertificatePfxBase64 string = ''
 param parContainerAppAllowedIpAddresses array = []
 param parContainerAppScaleSettings object
 param parFoundryDeployments FoundryDeploymentType[]
 param parTags TagsType
+param parNamePrefix string = 'open-webui-app'
+
+// MARK: - Existing Hub Resources
+// Reference hub VNet and PE subnet
+resource resHubVnet 'Microsoft.Network/virtualNetworks@2024-05-01' existing = {
+  scope: resourceGroup(parHubResourceGroupName)
+  name: parHubVirtualNetworkName
+}
+
+resource resHubPeSubnet 'Microsoft.Network/virtualNetworks/subnets@2024-05-01' existing = {
+  parent: resHubVnet
+  name: 'pe-subnet'
+}
+
+// Reference Foundry private DNS zones in hub
+resource resCognitiveServicesDnsZone 'Microsoft.Network/privateDnsZones@2024-06-01' existing = {
+  scope: resourceGroup(parHubResourceGroupName)
+  name: 'privatelink.cognitiveservices.azure.com'
+}
+
+resource resOpenAIDnsZone 'Microsoft.Network/privateDnsZones@2024-06-01' existing = {
+  scope: resourceGroup(parHubResourceGroupName)
+  name: 'privatelink.openai.azure.com'
+}
+
+resource resAIServicesDnsZone 'Microsoft.Network/privateDnsZones@2024-06-01' existing = {
+  scope: resourceGroup(parHubResourceGroupName)
+  name: 'privatelink.services.ai.azure.com'
+}
+
 // Variables
 var varOpenWebUiShare = 'open-webui-share'
-var varOpenWebUiApp = 'open-webui-app'
 var varAppRegistrationName = 'app-open-webui'
 var varIpSecurityRestrictions = [for ip in parContainerAppAllowedIpAddresses: {
   name: 'allow-${replace(ip, '/', '-')}'
   ipAddressRange: ip
   action: 'Allow'
 }]
+var varFoundryPrivateDnsZoneConfigs = [
+  { privateDnsZoneResourceId: resCognitiveServicesDnsZone.id }
+  { privateDnsZoneResourceId: resOpenAIDnsZone.id }
+  { privateDnsZoneResourceId: resAIServicesDnsZone.id }
+]
 var varRoleDefinitions = {
   keyVaultSecretsUser: '4633458b-17de-408a-b874-0445c86b69e6'
   cognitiveServicesUser: '5e0bd9bd-7b93-4f28-af87-19fc36ad61bd'
-}
-
-// ========== Existing Resources ==========
-// Reference existing APIM to get its managed identity principal ID
-resource resApimExisting 'Microsoft.ApiManagement/service@2023-05-01-preview' existing = if (!empty(parApimName)) {
-  scope: resourceGroup(parHubResourceGroupName)
-  name: parApimName
+  azureAIUser: '53ca6127-db72-4b80-b1b0-d745d6d5456d'
 }
 
 // MARK: - Entra ID App Registration
@@ -159,7 +186,7 @@ module modResourceGroup 'br/public:avm/res/resources/resource-group:0.4.2' = {
 module modNsgContainerApp 'br/public:avm/res/network/network-security-group:0.5.2' = {
   scope: resourceGroup(parResourceGroupName)
   params: {
-    name: '${varOpenWebUiApp}-aca-nsg'
+    name: '${parNamePrefix}-aca-nsg'
     location: parLocation
   }
   dependsOn: [modResourceGroup]
@@ -169,13 +196,13 @@ module modNsgContainerApp 'br/public:avm/res/network/network-security-group:0.5.
 module modVirtualNetwork 'br/public:avm/res/network/virtual-network:0.7.1' = {
   scope: resourceGroup(parResourceGroupName)
   params: {
-    name: '${varOpenWebUiApp}-vnet'
+    name: '${parNamePrefix}-vnet'
     addressPrefixes: [
       parVirtualNetworkAddressPrefix
     ]
     subnets: [
       {
-        name: '${varOpenWebUiApp}-aca-subnet'
+        name: '${parNamePrefix}-aca-subnet'
         addressPrefix: parAcaSubnetAddressPrefix
         networkSecurityGroupResourceId: modNsgContainerApp.outputs.resourceId
         serviceEndpoints: [
@@ -202,7 +229,7 @@ module modVirtualNetwork 'br/public:avm/res/network/virtual-network:0.7.1' = {
 module modLogAnalyticsWorkspace 'br/public:avm/res/operational-insights/workspace:0.13.0' = {
   scope: resourceGroup(parResourceGroupName)
   params: {
-    name: '${varOpenWebUiApp}-law'
+    name: '${parNamePrefix}-law'
     location: parLocation
     skuName: 'PerGB2018'
     dailyQuotaGb: 1
@@ -220,7 +247,7 @@ module modLogAnalyticsWorkspace 'br/public:avm/res/operational-insights/workspac
 module modAppInsights 'br/public:avm/res/insights/component:0.7.1' = {
   scope: resourceGroup(parResourceGroupName)
   params: {
-    name: '${varOpenWebUiApp}-appi'
+    name: '${parNamePrefix}-appi'
     location: parLocation
     workspaceResourceId: modLogAnalyticsWorkspace.outputs.resourceId
     applicationType: 'web'
@@ -234,7 +261,7 @@ module modAppInsights 'br/public:avm/res/insights/component:0.7.1' = {
 module modKeyVault 'br/public:avm/res/key-vault/vault:0.13.3' = {
   scope: resourceGroup(parResourceGroupName)
   params: {
-    name: '${varOpenWebUiApp}-kv'
+    name: '${parNamePrefix}-kv'
     location: parLocation
     sku: 'standard'
     enablePurgeProtection: false
@@ -256,7 +283,7 @@ module modKeyVault 'br/public:avm/res/key-vault/vault:0.13.3' = {
 module modStorageAccount 'br/public:avm/res/storage/storage-account:0.29.0' = {
   scope: resourceGroup(parResourceGroupName)
   params: {
-    name: replace('${varOpenWebUiApp}sa', '-', '')
+    name: replace('${parNamePrefix}sa', '-', '')
     location: parLocation
     skuName: 'Standard_LRS'
     kind: 'StorageV2'
@@ -304,7 +331,7 @@ module modStorageAccount 'br/public:avm/res/storage/storage-account:0.29.0' = {
 module modEnvIdentity 'br/public:avm/res/managed-identity/user-assigned-identity:0.4.1' = {
   scope: resourceGroup(parResourceGroupName)
   params: {
-    name: 'umi-${varOpenWebUiApp}'
+    name: 'umi-${parNamePrefix}'
     location: parLocation
   }
   dependsOn: [modResourceGroup]
@@ -326,7 +353,7 @@ module modEnvKeyVaultRbac 'br/public:avm/ptn/authorization/resource-role-assignm
 module modContainerAppEnv 'br/public:avm/res/app/managed-environment:0.11.3' = {
   scope: resourceGroup(parResourceGroupName)
   params: {
-    name: replace('${varOpenWebUiApp}-aca-env', '-', '')
+    name: replace('${parNamePrefix}-aca-env', '-', '')
     location: parLocation
     appInsightsConnectionString: modAppInsights.outputs.connectionString
     publicNetworkAccess: 'Disabled'
@@ -362,8 +389,9 @@ module modContainerAppEnv 'br/public:avm/res/app/managed-environment:0.11.3' = {
 module modContainerApp 'br/public:avm/res/app/container-app:0.19.0' = {
   scope: resourceGroup(parResourceGroupName)
   params: {
-    name: '${varOpenWebUiApp}-aca'
+    name: '${parNamePrefix}-aca'
     ingressTargetPort: 8080
+    stickySessionsAffinity: 'sticky'
     ipSecurityRestrictions: !empty(parContainerAppAllowedIpAddresses) ? varIpSecurityRestrictions : []
     customDomains: [
       {
@@ -517,6 +545,38 @@ module modContainerApp 'br/public:avm/res/app/container-app:0.19.0' = {
             mountPath: '/app/data'
           }
         ]
+        probes: [
+          {
+            type: 'startup'
+            httpGet: {
+              path: '/health'
+              port: 8080
+            }
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 30 // 30 × 5s = 150s max startup time
+          }
+          {
+            type: 'liveness'
+            httpGet: {
+              path: '/health'
+              port: 8080
+            }
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 3
+          }
+          {
+            type: 'readiness'
+            httpGet: {
+              path: '/health'
+              port: 8080
+            }
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 3
+          }
+        ]
       }
     ]
     secrets: [
@@ -561,7 +621,7 @@ module modContainerAppKeyVaultRbac 'br/public:avm/ptn/authorization/resource-rol
 module modFoundry 'br/public:avm/res/cognitive-services/account:0.14.0' = {
   scope: resourceGroup(parResourceGroupName)
   params: {
-    name: '${varOpenWebUiApp}-foundry'
+    name: '${parNamePrefix}-foundry'
     location: parLocation
     kind: 'AIServices'
     sku: 'S0'
@@ -570,7 +630,16 @@ module modFoundry 'br/public:avm/res/cognitive-services/account:0.14.0' = {
       systemAssigned: true
     }
     allowProjectManagement: true
-    customSubDomainName: replace('${varOpenWebUiApp}-foundry', '-', '')
+    privateEndpoints: [
+      {
+        name: '${parNamePrefix}-foundry-pe'
+        subnetResourceId: resHubPeSubnet.id
+        privateDnsZoneGroup: {
+          privateDnsZoneGroupConfigs: varFoundryPrivateDnsZoneConfigs
+        }
+      }
+    ]
+    customSubDomainName: replace('${parNamePrefix}-foundry', '-', '')
     networkAcls:{
       defaultAction: 'Deny'
       virtualNetworkRules:[
@@ -579,27 +648,21 @@ module modFoundry 'br/public:avm/res/cognitive-services/account:0.14.0' = {
           ignoreMissingVnetServiceEndpoint: false
         }
       ]
-      ipRules: [for ipAddress in parApimAllowedIpAddresses: {
-        value: ipAddress
-      }]
     }
     deployments: parFoundryDeployments
-    roleAssignments: concat(
-      [
-        {
-          principalId: modContainerApp.outputs.systemAssignedMIPrincipalId!
-          principalType: 'ServicePrincipal'
-          roleDefinitionIdOrName: varRoleDefinitions.cognitiveServicesUser
-        }
-      ],
-      !empty(parApimName) ? [
-        {
-          principalId: resApimExisting!.identity.principalId!
-          principalType: 'ServicePrincipal'
-          roleDefinitionIdOrName: varRoleDefinitions.cognitiveServicesUser
-        }
-      ] : []
-    )
+    // Container App RBAC - APIM RBAC is assigned in main.bicep after APIM is created
+    roleAssignments: [
+      {
+        principalId: modContainerApp.outputs.systemAssignedMIPrincipalId!
+        principalType: 'ServicePrincipal'
+        roleDefinitionIdOrName: varRoleDefinitions.cognitiveServicesUser
+      }
+      {
+        principalId: modContainerApp.outputs.systemAssignedMIPrincipalId!
+        principalType: 'ServicePrincipal'
+        roleDefinitionIdOrName: varRoleDefinitions.azureAIUser
+      }
+    ]
   }
   dependsOn: [modResourceGroup]
 }

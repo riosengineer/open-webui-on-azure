@@ -97,7 +97,7 @@ module modAppGateway 'br/public:avm/res/network/application-gateway:0.6.0' = {
         properties: {
           port: 443
           protocol: 'Https'
-          cookieBasedAffinity: 'Disabled'
+          cookieBasedAffinity: 'Enabled'
           pickHostNameFromBackendAddress: !empty(parCustomDomain) ? false : true
           hostName: !empty(parCustomDomain) ? parCustomDomain : null
           requestTimeout: 30
@@ -169,11 +169,8 @@ module modAppGateway 'br/public:avm/res/network/application-gateway:0.6.0' = {
           httpListener: {
             id: resourceId(subscription().subscriptionId, parResourceGroupName, 'Microsoft.Network/applicationGateways/httpListeners', parAppGatewayName, 'containerapp-http-listener')
           }
-          backendAddressPool: {
-            id: resourceId(subscription().subscriptionId, parResourceGroupName, 'Microsoft.Network/applicationGateways/backendAddressPools', parAppGatewayName, 'containerapp-backend-pool')
-          }
-          backendHttpSettings: {
-            id: resourceId(subscription().subscriptionId, parResourceGroupName, 'Microsoft.Network/applicationGateways/backendHttpSettingsCollection', parAppGatewayName, 'containerapp-backend-settings')
+          redirectConfiguration: {
+            id: resourceId(subscription().subscriptionId, parResourceGroupName, 'Microsoft.Network/applicationGateways/redirectConfigurations', parAppGatewayName, 'http-to-https-redirect')
           }
         }
       }
@@ -191,6 +188,19 @@ module modAppGateway 'br/public:avm/res/network/application-gateway:0.6.0' = {
           backendHttpSettings: {
             id: resourceId(subscription().subscriptionId, parResourceGroupName, 'Microsoft.Network/applicationGateways/backendHttpSettingsCollection', parAppGatewayName, 'containerapp-backend-settings')
           }
+        }
+      }
+    ]
+    redirectConfigurations: [
+      {
+        name: 'http-to-https-redirect'
+        properties: {
+          redirectType: 'Permanent'
+          targetListener: {
+            id: resourceId(subscription().subscriptionId, parResourceGroupName, 'Microsoft.Network/applicationGateways/httpListeners', parAppGatewayName, 'containerapp-https-listener')
+          }
+          includePath: true
+          includeQueryString: true
         }
       }
     ]

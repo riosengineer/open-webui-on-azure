@@ -10,7 +10,7 @@
     },
     "servers": [
         {
-            "url": "https://openwebuiappfoundry.services.ai.azure.com/openai"
+            "url": ""
         }
     ],
     "paths": {

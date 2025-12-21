@@ -1,6 +1,7 @@
 <policies>
     <inbound>
         <base />
+        <!-- Azure AD validation disabled - uncomment when parOpenWebUIAppId is configured
         <validate-azure-ad-token tenant-id="{{tenant-id}}">
             <audiences>
                 <audience>{{openwebui-app-id}}</audience>
@@ -12,6 +13,7 @@
                 </claim>
             </required-claims>
         </validate-azure-ad-token>
+        -->
         <!-- AI Gateway: Emit token metrics for analytics -->
         <llm-emit-token-metric>
             <dimension name="Client IP address" value="@(context.Request.IpAddress)" />

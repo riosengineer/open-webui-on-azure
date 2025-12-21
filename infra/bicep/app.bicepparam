@@ -6,12 +6,9 @@ param parVirtualNetworkAddressPrefix = '10.0.4.0/22'
 param parAcaSubnetAddressPrefix = '10.0.4.0/23'
 param parHubResourceGroupName = 'rg-lb-core'
 param parHubVirtualNetworkName = 'vnet-lb-core'
-param parCustomDomain = 'openwebui.contoso.com'
+param parCustomDomain = 'openwebui.rios.engineer'
 param parCertificateName = 'cloudflare-origin-cert'
 param parApimName = 'apim-open-webui'
-param parApimAllowedIpAddresses = [
-  //'APIM-PIP' // Add your APIM VIP - New Foundry doesn't support end to end private networking yet.
-]
 param parContainerAppAllowedIpAddresses = [
   '10.0.0.64/26' // App Gateway subnet
 ]

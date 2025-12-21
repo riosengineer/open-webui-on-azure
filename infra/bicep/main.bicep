@@ -16,6 +16,7 @@ param parVirtualNetworkName string
 param parVirtualNetworkAddressPrefix string
 param parApimSubnetAddressPrefix string
 param parAppGatewaySubnetAddressPrefix string
+param parPeSubnetAddressPrefix string
 param parApimSku string
 param parAppGatewaySku string
 param parSpokeResourceGroupName string
@@ -29,10 +30,13 @@ param parCustomDomain string
 param parSpokeKeyVaultName string
 param parTrustedRootCertificateSecretName string
 param parSslCertificateSecretName string
-param parFoundryEndpoint string
 param parTags TagsType
 @description('Optional: OpenWebUI App ID from app.bicep deployment. Leave empty for initial deployment.')
 param parOpenWebUIAppId string = ''
+@description('Foundry resource name in spoke - used to reference existing Foundry and get its endpoint')
+param parFoundryName string = 'open-webui-app-foundry'
+@description('Set to true after spoke (app.bicep) has been deployed to configure APIM Foundry backend and RBAC')
+param parConfigureFoundry bool = false
 
 
 // ========== MARK: Variables ==========
@@ -44,6 +48,14 @@ var varTrustedRootCertificateBase64 = loadTextContent('./cert/cloudflare-origin-
 var varRoleDefinitions = {
   keyVaultSecretsUser: '4633458b-17de-408a-b874-0445c86b69e6'
 }
+
+// Reference existing Foundry in spoke to get its endpoint dynamically
+// Only reference when parConfigureFoundry is true (second hub deployment)
+resource resFoundryExisting 'Microsoft.CognitiveServices/accounts@2024-10-01' existing = if (parConfigureFoundry) {
+  scope: resourceGroup(parSpokeResourceGroupName)
+  name: parFoundryName
+}
+
 // Public IP configurations for loop deployment
 var varPublicIpConfigs = [
   {
@@ -77,6 +89,7 @@ module modNetworking 'modules/networking.bicep' = {
     parVirtualNetworkAddressPrefix: parVirtualNetworkAddressPrefix
     parApimSubnetAddressPrefix: parApimSubnetAddressPrefix
     parAppGatewaySubnetAddressPrefix: parAppGatewaySubnetAddressPrefix
+    parPeSubnetAddressPrefix: parPeSubnetAddressPrefix
     parSpokeResourceGroupName: parSpokeResourceGroupName
     parSpokeVirtualNetworkName: parSpokeVirtualNetworkName
     parContainerAppEnvDefaultDomain: varContainerAppEnvDefaultDomain
@@ -169,7 +182,7 @@ module modApim 'modules/apim.bicep' = {
     parSku: parApimSku
     parPublisherEmail: parApimPublisherEmail
     parPublisherName: parApimPublisherName
-    parFoundryEndpoint: parFoundryEndpoint
+    parFoundryEndpoint: parConfigureFoundry ? resFoundryExisting!.properties.endpoint : ''
     parOpenWebUIAppId: !empty(parOpenWebUIAppId) ? parOpenWebUIAppId : ''
     parAppInsightsName: modMonitoring.outputs.appInsightsName
     parAppInsightsResourceId: modMonitoring.outputs.appInsightsResourceId
@@ -181,6 +194,29 @@ module modApim 'modules/apim.bicep' = {
   dependsOn: [
     modResourceGroup
   ]
+}
+
+// MARK: - APIM → Foundry RBAC
+// Grant APIM managed identity access to Foundry (Cognitive Services User + Azure AI User)
+// Only configure when parConfigureFoundry is true (second hub deployment)
+module modApimFoundryCognitiveServicesUserRbac 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = if (parConfigureFoundry) {
+  scope: resourceGroup(parSpokeResourceGroupName)
+  params: {
+    principalId: modApim.outputs.systemAssignedMIPrincipalId
+    resourceId: resFoundryExisting!.id
+    roleDefinitionId: 'a97b65f3-24c7-4388-baec-2e87135dc908' // Cognitive Services User
+    principalType: 'ServicePrincipal'
+  }
+}
+
+module modApimFoundryAzureAIUserRbac 'br/public:avm/ptn/authorization/resource-role-assignment:0.1.2' = if (parConfigureFoundry) {
+  scope: resourceGroup(parSpokeResourceGroupName)
+  params: {
+    principalId: modApim.outputs.systemAssignedMIPrincipalId
+    resourceId: resFoundryExisting!.id
+    roleDefinitionId: '53ca6127-db72-4b80-b1b0-d745d6d5456d' // Azure AI User
+    principalType: 'ServicePrincipal'
+  }
 }
 
 // MARK: - APIM Private DNS A Record
