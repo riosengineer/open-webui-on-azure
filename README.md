@@ -5,6 +5,7 @@ Deploy [Open WebUI](https://github.com/open-webui/open-webui) on Azure Container
 ## Architecture
 
 ![Azure Open WebUI architecture](docs/architecture.drawio.png)
+![Azure Open WebUI network flow](docs/network-flow.drawio.png)
 
 ## Features
 
