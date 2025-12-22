@@ -1,0 +1,37 @@
+<policies>
+    <inbound>
+        <base />
+        <!-- Azure AD token validation - requires parOpenWebUIAppId to be configured -->
+        <validate-azure-ad-token tenant-id="{{tenant-id}}">
+            <audiences>
+                <audience>{{openwebui-app-id}}</audience>
+            </audiences>
+            <required-claims>
+                <claim name="roles" match="any">
+                    <value>admin</value>
+                    <value>user</value>
+                </claim>
+            </required-claims>
+        </validate-azure-ad-token>
+        <!-- AI Gateway: Emit token metrics for analytics -->
+        <llm-emit-token-metric>
+            <dimension name="Client IP address" value="@(context.Request.IpAddress)" />
+            <dimension name="User ID" value="@(context.Request.Headers.GetValueOrDefault(&quot;Authorization&quot;,&quot;&quot;).AsJwt()?.Subject ?? &quot;anonymous&quot;)" />
+            <dimension name="Subscription ID" />
+            <dimension name="API ID" />
+        </llm-emit-token-metric>
+        <!-- AI Gateway: Token rate limiting with prompt estimation -->
+        <llm-token-limit tokens-per-minute="50000" estimate-prompt-tokens="true" counter-key="@(context.Subscription.Id)" tokens-consumed-header-name="consumed-tokens" remaining-tokens-header-name="remaining-tokens" />
+        <set-backend-service backend-id="foundry-backend" />
+        <authentication-managed-identity resource="https://cognitiveservices.azure.com" />
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <base />
+    </outbound>
+    <on-error>
+        <base />
+    </on-error>
+</policies>

@@ -1,0 +1,37 @@
+
+{
+  "name": "Azure Dev Container",
+  "features": {
+    "ghcr.io/devcontainers/features/azure-cli:1": {
+      "version": "latest",
+      "installBicep": true,
+      "bicepVersion": "latest",
+      "extensions": ""
+    },
+    "ghcr.io/devcontainers/features/powershell:1": {
+      "version": "latest"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.azurecli",
+        "ms-vscode.powershell",
+        "ms-azuretools.vscode-bicep",
+        "ms-azuretools.vscode-apimanagement",
+        "ms-foundry.vscode-extension",
+        "github.vscode-pull-request-github"
+      ],
+      "settings": {
+        "github.copilot.chat.codeGeneration.instructions": [
+          {
+            "text": "This dev container includes the Azure CLI, Bicep, and PowerShell pre-installed and available on the `PATH`, along with relevant VS Code extensions for Azure development."
+          }
+        ]
+      }
+    }
+  },
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/common-utils"
+  ]
+}

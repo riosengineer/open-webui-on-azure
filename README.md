@@ -1,6 +1,9 @@
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 # azure-apim-openwebui-quickstart
 =======
+=======
+>>>>>>> 647315a56a6f07e4605caa65a2e08a2cf0dbba78
 # Open WebUI on Azure - Production Grade Quickstart
 
 Deploy [Open WebUI](https://github.com/open-webui/open-webui) on Azure Container Apps with Entra ID authentication, Azure API Management (AI API Gateway), Microsoft (Azure) Foundry integration, and Application Gateway.
@@ -18,11 +21,20 @@ Deploy [Open WebUI](https://github.com/open-webui/open-webui) on Azure Container
 - **API Management with AI in Azure** Delegate API keys per team/user(s) with token tracking, limits, usage metrics, Entra OAuth policy validation
 - **No secrets!** Managed Identity + OIDC throughout*
 - **Infrastructure as Code** using Bicep with Azure Verified Modules
+<<<<<<< HEAD
 - **Secure by default** using internal ingresses and private endpoints
+=======
+- **Secure by default** using internal ingresses and private endpoints**
+>>>>>>> 647315a56a6f07e4605caa65a2e08a2cf0dbba78
 
 > [!NOTE]
 >
 > - *Azure Container Apps still [requires Storage Account Access Keys for Azure File SMB mount](https://learn.microsoft.com/en-us/azure/container-apps/storage-mounts-azure-files?tabs=bash#set-up-a-storage-account) :(
+<<<<<<< HEAD
+=======
+>
+> - **All traffic to Foundry flows through APIM via Private Endpoint for complete network isolation.
+>>>>>>> 647315a56a6f07e4605caa65a2e08a2cf0dbba78
 
 ## Prerequisites
 
@@ -60,7 +72,11 @@ az deployment sub create --location uksouth --template-file infra/bicep/main.bic
 ```
 
 > [!NOTE]
+<<<<<<< HEAD
 > This first deploy uses `parConfigureFoundry=false` (default) - Foundry backend, RBAC, and Entra token validation use placeholders. We'll redeploy with `parConfigureFoundry=true` and `parOpenWebUIAppId` after the app spoke is created.
+=======
+> This first deploy uses `parConfigureFoundry=false` (default) - Foundry backend, RBAC, and Entra token validation use placeholders. We'll redeploy with `parConfigureFoundry=true` and `parOpenWebUIAppId` after the spoke is created.
+>>>>>>> 647315a56a6f07e4605caa65a2e08a2cf0dbba78
 
 **Note the output:**
 
@@ -68,7 +84,11 @@ az deployment sub create --location uksouth --template-file infra/bicep/main.bic
 
 ### 2. Deploy App Infrastructure (Foundry, Container Apps)
 
+<<<<<<< HEAD
 Create the PFX certificate and deploy app spoke:
+=======
+Create the PFX certificate and deploy spoke:
+>>>>>>> 647315a56a6f07e4605caa65a2e08a2cf0dbba78
 
 **Linux/macOS:**
 
@@ -77,7 +97,11 @@ Create the PFX certificate and deploy app spoke:
 openssl pkcs12 -export -out cloudflare-origin.pfx -inkey origin.key -in origin.pem -password pass:
 base64 -w0 cloudflare-origin.pfx > pfx.b64
 
+<<<<<<< HEAD
 # Deploy app spoke infrastructure
+=======
+# Deploy spoke infrastructure (Foundry PE will use hub's DNS zones)
+>>>>>>> 647315a56a6f07e4605caa65a2e08a2cf0dbba78
 az deployment sub create --location uksouth --template-file infra/bicep/app.bicep --parameters infra/bicep/app.bicepparam --parameters parCertificatePfxBase64="$(cat pfx.b64)"
 ```
 
@@ -88,7 +112,11 @@ az deployment sub create --location uksouth --template-file infra/bicep/app.bice
 openssl pkcs12 -export -out cloudflare-origin.pfx -inkey origin.key -in origin.pem -password pass:
 $pfxBase64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("cloudflare-origin.pfx"))
 
+<<<<<<< HEAD
 # Deploy app spoke infrastructure
+=======
+# Deploy spoke infrastructure (Foundry PE will use hub's DNS zones)
+>>>>>>> 647315a56a6f07e4605caa65a2e08a2cf0dbba78
 az deployment sub create --location uksouth --template-file infra/bicep/app.bicep --parameters infra/bicep/app.bicepparam --parameters parCertificatePfxBase64=$pfxBase64
 ```
 
@@ -160,4 +188,7 @@ az apim api import --resource-group rg-lb-core --service-name <apim-name> --api-
    - **API Type**: `OpenAI`
    - **Auth**: `OAuth`
    - **Model Ids**: Input all models deployed to Foundry,e.g. `gpt-5-mini`
+<<<<<<< HEAD
 >>>>>>> Stashed changes
+=======
+>>>>>>> 647315a56a6f07e4605caa65a2e08a2cf0dbba78
