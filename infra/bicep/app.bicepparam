@@ -6,7 +6,7 @@ param parVirtualNetworkAddressPrefix = '10.0.4.0/22'
 param parAcaSubnetAddressPrefix = '10.0.4.0/23'
 param parHubResourceGroupName = 'rg-lb-core'
 param parHubVirtualNetworkName = 'vnet-lb-core'
-param parCustomDomain = 'openwebui.rios.engineer'
+param parCustomDomain = 'openwebui.example.com'
 param parCertificateName = 'cloudflare-origin-cert'
 param parApimName = 'apim-open-webui'
 param parContainerAppAllowedIpAddresses = [
@@ -15,7 +15,7 @@ param parContainerAppAllowedIpAddresses = [
 param parTags = {
   Application: 'Open WebUI'
   Environment: 'Demo'
-  Owner: 'Dan Rios'
+  Owner: 'Your Name'
 }
 param parContainerAppScaleSettings = {
   minReplicas: 1

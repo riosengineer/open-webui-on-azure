@@ -2,8 +2,8 @@ using 'main.bicep'
 // Change values as required for your setup/demo/poc
 param parApimName = 'apim-open-webui'
 param parLocation = 'uksouth'
-param parApimPublisherEmail = 'dan@riosengineer.com'
-param parApimPublisherName = 'Dan Rios'
+param parApimPublisherEmail = 'your-email@example.com'
+param parApimPublisherName = 'Your Name'
 param parAppGatewayName = 'appgw-open-webui'
 param parResourceGroupName = 'rg-lb-core'
 param parVirtualNetworkName = 'vnet-lb-core'
@@ -17,7 +17,7 @@ param parContainerAppFqdn = 'open-webui-app-aca.jollyfield-adf491b7.uksouth.azur
 param parContainerAppStaticIp = '10.0.4.91'
 param parSpokeResourceGroupName = 'rg-open-webui-app'
 param parSpokeVirtualNetworkName = 'open-webui-app-vnet'
-param parCustomDomain = 'openwebui.rios.engineer'
+param parCustomDomain = 'openwebui.example.com'
 param parSpokeKeyVaultName = 'open-webui-app-kv'
 param parTrustedRootCertificateSecretName = 'cloudflare-origin-ca'
 param parSslCertificateSecretName = 'cloudflare-origin-cert'
@@ -25,7 +25,7 @@ param parSslCertificateSecretName = 'cloudflare-origin-cert'
 param parFoundryName = 'open-webui-app-foundry'
 // Entra ID App Registration ID from app.bicep output (outOpenWebUIAppId)
 // Used for APIM token validation policy
-param parOpenWebUIAppId = '7eb52126-ee47-4700-8561-77f433fdd2eb'
+param parOpenWebUIAppId = '00000000-0000-0000-0000-000000000000'
 // Set to true on SECOND hub deployment after Foundry exists (Step 3)
 // First deployment: false (creates hub networking + APIM without Foundry backend)
 // Second deployment: true (configures APIM with Foundry endpoint + RBAC)
