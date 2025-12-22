@@ -34,12 +34,14 @@ Deploy [Open WebUI](https://github.com/open-webui/open-webui) on Azure Container
 > Before deploying, update the `.bicepparam` files with your values:
 >
 > **`infra/bicep/main.bicepparam`:**
+>
 > - `parApimPublisherEmail` - Your email address
 > - `parApimPublisherName` - Your name
 > - `parCustomDomain` - Your custom domain (e.g., `openwebui.example.com`)
 > - `parLocation` - Your Azure region
 >
 > **`infra/bicep/app.bicepparam`:**
+>
 > - `parCustomDomain` - Same custom domain as above
 > - `parHubResourceGroupName` - Must match `parResourceGroupName` in main.bicepparam
 > - `parHubVirtualNetworkName` - Must match `parVirtualNetworkName` in main.bicepparam
