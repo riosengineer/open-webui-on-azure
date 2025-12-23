@@ -137,7 +137,7 @@ az deployment sub create --location uksouth --template-file infra/bicep/main.bic
 > This step is required due to Bicep's character limit on inline content. The OpenAPI spec must be imported manually via Azure CLI.
 
 ```bash
-az apim api import --resource-group rg-lb-core --service-name <apim-name> --api-id openai --path "openai/v1" --specification-format OpenApiJson --specification-path infra/bicep/openapi/openai.openapi.json --display-name "Azure OpenAI v1 API" --protocols https --subscription-required true
+az apim api import --resource-group <your-rg> --service-name <apim-name> --api-id openai --path "openai/v1" --specification-format OpenApiJson --specification-path infra/bicep/openapi/openai.openapi.json --display-name "Azure OpenAI v1 API" --protocols https --subscription-required true
 ```
 
 ## Configuration
