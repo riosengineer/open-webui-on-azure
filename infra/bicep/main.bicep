@@ -31,11 +31,8 @@ param parSpokeKeyVaultName string
 param parTrustedRootCertificateSecretName string
 param parSslCertificateSecretName string
 param parTags TagsType
-@description('Optional: OpenWebUI App ID from app.bicep deployment. Leave empty for initial deployment.')
 param parOpenWebUIAppId string = ''
-@description('Foundry resource name in spoke - used to reference existing Foundry and get its endpoint')
 param parFoundryName string = 'open-webui-app-foundry'
-@description('Set to true after spoke (app.bicep) has been deployed to configure APIM Foundry backend and RBAC')
 param parConfigureFoundry bool = false
 
 

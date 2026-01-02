@@ -170,7 +170,7 @@ resource resEntraIdApp 'Microsoft.Graph/applications@v1.0' = {
 // MARK: - Entra ID Service Principal
 resource resEntraIdServicePrincipal 'Microsoft.Graph/servicePrincipals@v1.0' = {
   appId: resEntraIdApp.appId
-
+  appRoleAssignmentRequired: true
 }
 
 // MARK: - Resource Group
