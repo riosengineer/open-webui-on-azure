@@ -9,18 +9,23 @@ Deploy [Open WebUI](https://github.com/open-webui/open-webui) on Azure Container
 
 ## Features
 
-✅ **Open WebUI** on Azure Container Apps with native OAuth/OIDC Entra ID integration  
-✅ **Microsoft Foundry** with multiple models (GPT, Grok, Mistral, Llama, DeepSeek) using Managed Identity  
-✅ **Application Gateway** with custom domain and SSL termination  
-✅ **API Management with AI in Azure** Delegate API keys per team/user(s) with token tracking, limits, usage metrics, Entra OAuth policy validation  
-✅ **No secrets!** Managed Identity + OIDC throughout**
-✅ **Infrastructure as Code** using Bicep with Azure Verified Modules  
+✅ **Open WebUI** on Azure Container Apps with native OAuth/OIDC Entra ID integration
+
+✅ **Microsoft Foundry** with multiple models (GPT, Grok, Mistral, Llama, DeepSeek) using Managed Identity
+
+✅ **Application Gateway** with custom domain and SSL termination
+
+✅ **API Management with AI in Azure** Delegate API keys per team/user(s) with token tracking, limits, usage metrics, Entra OAuth policy validation
+
+✅ **No secrets!** Managed Identity + OIDC throughout*
+
+✅ **Infrastructure as Code** using Bicep with Azure Verified Modules
+
 ✅ **Secure by default** using internal ingresses and private endpoints
 
 > [!NOTE]
 >
 > - *Azure Container Apps still [requires Storage Account Access Keys for Azure File SMB mount](https://learn.microsoft.com/en-us/azure/container-apps/storage-mounts-azure-files?tabs=bash#set-up-a-storage-account) :(
-> **Open WebUI does not support Entra authentication for PostgresSQL yet.
 
 ## Prerequisites
 
@@ -66,7 +71,7 @@ az deployment sub create --location uksouth --template-file infra/bicep/main.bic
 
 - `outAppGatewayPublicIp` - Application Gateway public IP (for DNS)
 
-### 2. Deploy App Infrastructure (Foundry, Container Apps, PostgreSQL)
+### 2. Deploy App Infrastructure (Foundry, Container Apps)
 
 Create the PFX certificate and deploy app spoke:
 
@@ -77,8 +82,8 @@ Create the PFX certificate and deploy app spoke:
 openssl pkcs12 -export -out cloudflare-origin.pfx -inkey origin.key -in origin.pem -password pass:
 base64 -w0 cloudflare-origin.pfx > pfx.b64
 
-# Deploy app spoke infrastructure (replace <YourSecurePassword> with a strong password)
-az deployment sub create --location uksouth --template-file infra/bicep/app.bicep --parameters infra/bicep/app.bicepparam --parameters parCertificatePfxBase64="$(cat pfx.b64)" parPostgresAdminPassword='<YourSecurePassword>'
+# Deploy app spoke infrastructure
+az deployment sub create --location uksouth --template-file infra/bicep/app.bicep --parameters infra/bicep/app.bicepparam --parameters parCertificatePfxBase64="$(cat pfx.b64)"
 ```
 
 **Windows (PowerShell):**
@@ -88,12 +93,9 @@ az deployment sub create --location uksouth --template-file infra/bicep/app.bice
 openssl pkcs12 -export -out cloudflare-origin.pfx -inkey origin.key -in origin.pem -password pass:
 $pfxBase64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes("cloudflare-origin.pfx"))
 
-# Deploy app spoke infrastructure (replace <YourSecurePassword> with a strong password)
-az deployment sub create --location uksouth --template-file infra/bicep/app.bicep --parameters infra/bicep/app.bicepparam --parameters parCertificatePfxBase64=$pfxBase64 parPostgresAdminPassword='<YourSecurePassword>'
+# Deploy app spoke infrastructure
+az deployment sub create --location uksouth --template-file infra/bicep/app.bicep --parameters infra/bicep/app.bicepparam --parameters parCertificatePfxBase64=$pfxBase64
 ```
-
-> [!IMPORTANT]
-> **PostgreSQL Password Requirements:** Must be at least 8 characters with a mix of uppercase, lowercase, numbers, and special characters. The password is stored securely in Key Vault and used by Open WebUI to connect to the database.
 
 **Note these outputs:**
 
