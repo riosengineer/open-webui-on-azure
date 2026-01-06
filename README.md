@@ -12,7 +12,7 @@ Deploy [Open WebUI](https://github.com/open-webui/open-webui) on Azure Container
 ✅ **Open WebUI** on Azure Container Apps with native OAuth/OIDC Entra ID integration  
 ✅ **Microsoft Foundry** with multiple models (GPT, Grok, Mistral, Llama, DeepSeek) using Managed Identity  
 ✅ **Application Gateway** with custom domain and SSL termination  
-✅ **API Management with AI in Azure** Delegate API keys per team/user(s) with token tracking, limits, usage metrics, Entra OAuth policy validation  
+✅ **API Management with AI in Azure** with token tracking, limits, usage metrics, custom analytics, Entra OAuth policy validation enforcement
 ✅ **Azure PostgreSQL Database** for persistent storage (users, chats, settings) with private endpoint access  
 ✅ **No secrets!** Managed Identity + OIDC throughout*
 ✅ **Infrastructure as Code** using Bicep with Azure Verified Modules  
