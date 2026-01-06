@@ -9,6 +9,14 @@ param parHubVirtualNetworkName = 'vnet-lb-core'
 param parCustomDomain = 'openwebui.example.com'
 param parCertificateName = 'cloudflare-origin-cert'
 param parApimName = 'apim-open-webui'
+param parPostgresConfig = {
+  skuName: 'Standard_B1ms'
+  tier: 'Burstable'
+  version: '16'
+  storageSizeGB: 32
+  databaseName: 'openwebui'
+  adminUsername: 'pgadmin'
+}
 param parContainerAppAllowedIpAddresses = [
   '10.0.0.64/26' // App Gateway subnet
 ]
