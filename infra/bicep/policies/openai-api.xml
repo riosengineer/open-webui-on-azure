@@ -1,6 +1,11 @@
 <policies>
     <inbound>
         <base />
+        <!-- Extract model from request body for custom metrics -->
+        <set-variable name="model" value="@{
+            var body = context.Request.Body?.As<JObject>(preserveContent: true);
+            return body?[&quot;model&quot;]?.ToString() ?? &quot;unknown&quot;;
+        }" />
         <!-- Azure AD token validation - requires parOpenWebUIAppId to be configured -->
         <validate-azure-ad-token tenant-id="{{tenant-id}}">
             <audiences>
@@ -13,10 +18,11 @@
                 </claim>
             </required-claims>
         </validate-azure-ad-token>
-        <!-- AI Gateway: Emit token metrics for analytics -->
+        <!-- AI Gateway: Emit token metrics for analytics with model dimension -->
         <llm-emit-token-metric>
             <dimension name="Client IP address" value="@(context.Request.IpAddress)" />
             <dimension name="User ID" value="@(context.Request.Headers.GetValueOrDefault(&quot;Authorization&quot;,&quot;&quot;).AsJwt()?.Claims.GetValueOrDefault(&quot;preferred_username&quot;, &quot;anonymous&quot;))" />
+            <dimension name="Model" value="@((string)context.Variables[&quot;model&quot;])" />
             <dimension name="Subscription ID" />
             <dimension name="API ID" />
         </llm-emit-token-metric>
