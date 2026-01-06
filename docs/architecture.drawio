@@ -310,7 +310,7 @@
         <mxCell id="k2RVh91OBO5DSYyMgz-v-36" parent="1" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/databases/Azure_Database_PostgreSQL_Server.svg;" value="" vertex="1">
           <mxGeometry height="64" width="48" x="712" y="393" as="geometry" />
         </mxCell>
-        <mxCell id="k2RVh91OBO5DSYyMgz-v-37" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=9;fontStyle=0;fontColor=#555555;" value="PostgresSQL Database" vertex="1">
+        <mxCell id="k2RVh91OBO5DSYyMgz-v-37" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=9;fontStyle=0;fontColor=#555555;" value="PostgreSQL Database" vertex="1">
           <mxGeometry height="15" width="70" x="701" y="457" as="geometry" />
         </mxCell>
       </root>
