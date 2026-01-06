@@ -1,211 +1,211 @@
-<mxfile host="65bd71144e">
-    <diagram id="NetworkFlowV2" name="Network Flow">
-        <mxGraphModel dx="1194" dy="599" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" background="#F5F7FA" math="0" shadow="0">
-            <root>
-                <mxCell id="0"/>
-                <mxCell id="1" parent="0"/>
-                <mxCell id="title" value="Network Traffic Flow" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1;fontColor=#2C3E50;" parent="1" vertex="1">
-                    <mxGeometry x="500" y="30" width="600" height="40" as="geometry"/>
-                </mxCell>
-                <mxCell id="zone-internet" value="Internet / Public Access" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#4CAF50;strokeWidth=3;fontSize=13;fontStyle=1;verticalAlign=top;align=center;shadow=1;" parent="1" vertex="1">
-                    <mxGeometry x="80" y="120" width="240" height="180" as="geometry"/>
-                </mxCell>
-                <mxCell id="internet-label" value="End User" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontColor=#2C3E50;" parent="1" vertex="1">
-                    <mxGeometry x="155" y="215" width="90" height="30" as="geometry"/>
-                </mxCell>
-                <mxCell id="internet-detail" value="HTTPS Request&#xa;Port 443" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#666666;" parent="1" vertex="1">
-                    <mxGeometry x="145" y="245" width="110" height="35" as="geometry"/>
-                </mxCell>
-                <mxCell id="zone-agw" value="Hub VNet - Entry Point (10.0.0.0/24)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#2196F3;strokeWidth=3;fontSize=13;fontStyle=1;verticalAlign=top;align=center;shadow=1;" parent="1" vertex="1">
-                    <mxGeometry x="400" y="120" width="280" height="180" as="geometry"/>
-                </mxCell>
-                <mxCell id="agw-subnet-label" value="Subnet: 10.0.0.64/26" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontColor=#1976D2;fontStyle=2" parent="1" vertex="1">
-                    <mxGeometry x="465" y="145" width="150" height="20" as="geometry"/>
-                </mxCell>
-                <mxCell id="app-gateway" value="" style="sketch=0;aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/mscae/Application_Gateway.svg;" parent="1" vertex="1">
-                    <mxGeometry x="515" y="175" width="50" height="50" as="geometry"/>
-                </mxCell>
-                <mxCell id="agw-label" value="Application Gateway" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontColor=#2C3E50;" parent="1" vertex="1">
-                    <mxGeometry x="475" y="230" width="130" height="25" as="geometry"/>
-                </mxCell>
-                <mxCell id="agw-detail" value="WAF + TLS Termination&#xa;Public IP Frontend" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#666666;" parent="1" vertex="1">
-                    <mxGeometry x="460" y="255" width="160" height="35" as="geometry"/>
-                </mxCell>
-                <mxCell id="zone-aca" value="Spoke VNet - Application (10.0.4.0/22)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#FF9800;strokeWidth=3;fontSize=13;fontStyle=1;verticalAlign=top;align=center;shadow=1;" parent="1" vertex="1">
-                    <mxGeometry x="760" y="120" width="280" height="180" as="geometry"/>
-                </mxCell>
-                <mxCell id="aca-subnet-label" value="Subnet: 10.0.4.0/23" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontColor=#F57C00;fontStyle=2" parent="1" vertex="1">
-                    <mxGeometry x="825" y="145" width="150" height="20" as="geometry"/>
-                </mxCell>
-                <mxCell id="aca-label" value="Container App" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontColor=#2C3E50;" parent="1" vertex="1">
-                    <mxGeometry x="835" y="230" width="130" height="25" as="geometry"/>
-                </mxCell>
-                <mxCell id="aca-detail" value="Open WebUI Frontend&lt;br&gt;Private Endpoint Only&lt;div&gt;Internal Ingress&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#666666;" parent="1" vertex="1">
-                    <mxGeometry x="820" y="255" width="160" height="35" as="geometry"/>
-                </mxCell>
-                <mxCell id="zone-apim" value="Hub VNet - API Management (10.0.0.0/24)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3E5F5;strokeColor=#9C27B0;strokeWidth=3;fontSize=13;fontStyle=1;verticalAlign=top;align=center;shadow=1;" parent="1" vertex="1">
-                    <mxGeometry x="1120" y="120" width="280" height="180" as="geometry"/>
-                </mxCell>
-                <mxCell id="apim-subnet-label" value="Subnet: 10.0.0.0/28" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontColor=#7B1FA2;fontStyle=2" parent="1" vertex="1">
-                    <mxGeometry x="1185" y="145" width="150" height="20" as="geometry"/>
-                </mxCell>
-                <mxCell id="apim-label" value="API Management" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontColor=#2C3E50;" parent="1" vertex="1">
-                    <mxGeometry x="1195" y="230" width="130" height="25" as="geometry"/>
-                </mxCell>
-                <mxCell id="apim-detail" value="Internal VNet Mode&lt;br&gt;Managed Identity Auth&lt;div&gt;Entra OAuth validation + Sub Key&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#666666;" parent="1" vertex="1">
-                    <mxGeometry x="1180" y="255" width="160" height="35" as="geometry"/>
-                </mxCell>
-                <mxCell id="zone-pe" value="Hub VNet - Private Connectivity (10.0.0.0/24)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FCE4EC;strokeColor=#E91E63;strokeWidth=3;fontSize=13;fontStyle=1;verticalAlign=top;align=center;shadow=1;" parent="1" vertex="1">
-                    <mxGeometry x="1120" y="380" width="280" height="180" as="geometry"/>
-                </mxCell>
-                <mxCell id="pe-subnet-label" value="Subnet: 10.0.0.128/28" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontColor=#C2185B;fontStyle=2" parent="1" vertex="1">
-                    <mxGeometry x="1185" y="405" width="150" height="20" as="geometry"/>
-                </mxCell>
-                <mxCell id="pe-label" value="Private Endpoint" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontColor=#2C3E50;" parent="1" vertex="1">
-                    <mxGeometry x="1195" y="490" width="130" height="25" as="geometry"/>
-                </mxCell>
-                <mxCell id="pe-detail" value="&lt;div&gt;openwebuiapp.azure.ai.com&lt;/div&gt;Private Link Connection" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#666666;" parent="1" vertex="1">
-                    <mxGeometry x="1180" y="515" width="160" height="35" as="geometry"/>
-                </mxCell>
-                <mxCell id="zone-foundry" value="Microsoft Foundry" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E0F2F1;strokeColor=#00897B;strokeWidth=3;fontSize=13;fontStyle=1;verticalAlign=top;align=center;shadow=1;" parent="1" vertex="1">
-                    <mxGeometry x="760" y="380" width="280" height="180" as="geometry"/>
-                </mxCell>
-                <mxCell id="foundry-label" value="Azure AI Foundry" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontColor=#2C3E50;" parent="1" vertex="1">
-                    <mxGeometry x="835" y="480" width="130" height="25" as="geometry"/>
-                </mxCell>
-                <mxCell id="foundry-detail" value="AI Models&lt;br&gt;RBAC: Cognitive Services User&lt;div&gt;Azure AI User&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#666666;" parent="1" vertex="1">
-                    <mxGeometry x="820" y="505" width="160" height="35" as="geometry"/>
-                </mxCell>
-                <mxCell id="dns-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#90CAF9;strokeWidth=2;shadow=1;" parent="1" vertex="1">
-                    <mxGeometry x="400" y="380" width="280" height="90" as="geometry"/>
-                </mxCell>
-                <mxCell id="dns" value="" style="sketch=0;aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/mscae/DNS.svg;" parent="1" vertex="1">
-                    <mxGeometry x="440" y="405" width="40" height="40" as="geometry"/>
-                </mxCell>
-                <mxCell id="dns-label" value="Private DNS Zones" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontStyle=1;fontColor=#2C3E50;" parent="1" vertex="1">
-                    <mxGeometry x="490" y="405" width="180" height="20" as="geometry"/>
-                </mxCell>
-                <mxCell id="dns-detail" value="Resolves Container App FQDN&lt;br&gt;Resolves APIM internal endpoint&lt;div&gt;Resolves Foundry FQDN endpoint&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontColor=#666666;" parent="1" vertex="1">
-                    <mxGeometry x="490" y="425" width="180" height="35" as="geometry"/>
-                </mxCell>
-                <mxCell id="peering-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#81C784;strokeWidth=2;shadow=1;" parent="1" vertex="1">
-                    <mxGeometry x="400" y="490" width="280" height="70" as="geometry"/>
-                </mxCell>
-                <mxCell id="peering-icon" value="⇄" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=24;fontColor=#4CAF50;fontStyle=1" parent="1" vertex="1">
-                    <mxGeometry x="445" y="505" width="30" height="40" as="geometry"/>
-                </mxCell>
-                <mxCell id="peering-label" value="VNet Peering" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontStyle=1;fontColor=#2C3E50;" parent="1" vertex="1">
-                    <mxGeometry x="485" y="505" width="180" height="20" as="geometry"/>
-                </mxCell>
-                <mxCell id="peering-detail" value="Hub ⟷ Spoke connectivity&#xa;Allows cross-VNet private traffic" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontColor=#666666;" parent="1" vertex="1">
-                    <mxGeometry x="485" y="525" width="180" height="30" as="geometry"/>
-                </mxCell>
-                <mxCell id="flow1" value="" style="endArrow=classic;html=1;rounded=1;strokeWidth=4;strokeColor=#4CAF50;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;curved=0;" parent="1" source="zone-internet" target="zone-agw" edge="1">
-                    <mxGeometry width="50" height="50" relative="1" as="geometry">
-                        <mxPoint x="320" y="210" as="sourcePoint"/>
-                        <mxPoint x="400" y="210" as="targetPoint"/>
-                    </mxGeometry>
-                </mxCell>
-                <mxCell id="step1" value="❶" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#4CAF50;strokeColor=#FFFFFF;strokeWidth=3;fontColor=#ffffff;fontSize=16;fontStyle=1;shadow=1;" parent="1" vertex="1">
-                    <mxGeometry x="335" y="195" width="30" height="30" as="geometry"/>
-                </mxCell>
-                <mxCell id="flow2" value="" style="endArrow=classic;html=1;rounded=1;strokeWidth=2;strokeColor=#2196F3;dashed=1;dashPattern=8 4;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;curved=1;" parent="1" source="zone-agw" target="dns-box" edge="1">
-                    <mxGeometry width="50" height="50" relative="1" as="geometry">
-                        <mxPoint x="540" y="310" as="sourcePoint"/>
-                        <mxPoint x="540" y="370" as="targetPoint"/>
-                    </mxGeometry>
-                </mxCell>
-                <mxCell id="step2" value="❷" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#2196F3;strokeColor=#FFFFFF;strokeWidth=3;fontColor=#ffffff;fontSize=16;fontStyle=1;shadow=1;" parent="1" vertex="1">
-                    <mxGeometry x="525" y="330" width="30" height="30" as="geometry"/>
-                </mxCell>
-                <mxCell id="flow3" value="" style="endArrow=classic;html=1;rounded=1;strokeWidth=4;strokeColor=#FF9800;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;curved=0;" parent="1" source="zone-agw" target="zone-aca" edge="1">
-                    <mxGeometry width="50" height="50" relative="1" as="geometry">
-                        <mxPoint x="680" y="210" as="sourcePoint"/>
-                        <mxPoint x="760" y="210" as="targetPoint"/>
-                    </mxGeometry>
-                </mxCell>
-                <mxCell id="step3" value="❸" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#FF9800;strokeColor=#FFFFFF;strokeWidth=3;fontColor=#ffffff;fontSize=16;fontStyle=1;shadow=1;" parent="1" vertex="1">
-                    <mxGeometry x="705" y="195" width="30" height="30" as="geometry"/>
-                </mxCell>
-                <mxCell id="flow4" value="" style="endArrow=classic;html=1;rounded=1;strokeWidth=4;strokeColor=#9C27B0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;curved=0;" parent="1" source="zone-aca" target="zone-apim" edge="1">
-                    <mxGeometry width="50" height="50" relative="1" as="geometry">
-                        <mxPoint x="1040" y="210" as="sourcePoint"/>
-                        <mxPoint x="1120" y="210" as="targetPoint"/>
-                    </mxGeometry>
-                </mxCell>
-                <mxCell id="step4" value="❹" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#9C27B0;strokeColor=#FFFFFF;strokeWidth=3;fontColor=#ffffff;fontSize=16;fontStyle=1;shadow=1;" parent="1" vertex="1">
-                    <mxGeometry x="1065" y="195" width="30" height="30" as="geometry"/>
-                </mxCell>
-                <mxCell id="flow5" value="" style="endArrow=classic;html=1;rounded=1;strokeWidth=4;strokeColor=#E91E63;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;curved=0;" parent="1" source="zone-apim" target="zone-pe" edge="1">
-                    <mxGeometry width="50" height="50" relative="1" as="geometry">
-                        <mxPoint x="1260" y="310" as="sourcePoint"/>
-                        <mxPoint x="1260" y="370" as="targetPoint"/>
-                    </mxGeometry>
-                </mxCell>
-                <mxCell id="step5" value="❺" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#E91E63;strokeColor=#FFFFFF;strokeWidth=3;fontColor=#ffffff;fontSize=16;fontStyle=1;shadow=1;" parent="1" vertex="1">
-                    <mxGeometry x="1245" y="335" width="30" height="30" as="geometry"/>
-                </mxCell>
-                <mxCell id="flow6" value="" style="endArrow=classic;html=1;rounded=1;strokeWidth=4;strokeColor=#00897B;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;curved=0;" parent="1" source="zone-pe" target="zone-foundry" edge="1">
-                    <mxGeometry width="50" height="50" relative="1" as="geometry">
-                        <mxPoint x="1100" y="470" as="sourcePoint"/>
-                        <mxPoint x="1040" y="470" as="targetPoint"/>
-                    </mxGeometry>
-                </mxCell>
-                <mxCell id="step6" value="❻" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#00897B;strokeColor=#FFFFFF;strokeWidth=3;fontColor=#ffffff;fontSize=16;fontStyle=1;shadow=1;" parent="1" vertex="1">
-                    <mxGeometry x="1065" y="455" width="30" height="30" as="geometry"/>
-                </mxCell>
-                <mxCell id="legend-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BDBDBD;strokeWidth=2;shadow=1;" parent="1" vertex="1">
-                    <mxGeometry x="80" y="640" width="1320" height="280" as="geometry"/>
-                </mxCell>
-                <mxCell id="legend-title" value="🔄 Network Traffic Flow Sequence" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1;fontColor=#2C3E50;" parent="1" vertex="1">
-                    <mxGeometry x="80" y="655" width="1320" height="30" as="geometry"/>
-                </mxCell>
-                <mxCell id="legend-step1" value="❶  User initiates HTTPS request (port 443) → App Gateway public IP address via Cloudflare waf/proxy/dns" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontColor=#333333;" parent="1" vertex="1">
-                    <mxGeometry x="100" y="700" width="600" height="25" as="geometry"/>
-                </mxCell>
-                <mxCell id="legend-step2" value="❷  App Gateway queries Private DNS Zone to resolve Container App FQDN" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontColor=#333333;" parent="1" vertex="1">
-                    <mxGeometry x="100" y="735" width="600" height="25" as="geometry"/>
-                </mxCell>
-                <mxCell id="legend-step3" value="❸  App Gateway forwards traffic to Container App (10.0.4.x) via VNet peering" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontColor=#333333;" parent="1" vertex="1">
-                    <mxGeometry x="100" y="770" width="600" height="25" as="geometry"/>
-                </mxCell>
-                <mxCell id="legend-step4" value="❹  Container App makes API call to APIM internal endpoint (10.0.0.x)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontColor=#333333;" parent="1" vertex="1">
-                    <mxGeometry x="750" y="700" width="600" height="25" as="geometry"/>
-                </mxCell>
-                <mxCell id="legend-step5" value="❺  APIM authenticates using Managed Identity + Entra JWT → Private Endpoint connection" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontColor=#333333;" parent="1" vertex="1">
-                    <mxGeometry x="750" y="735" width="600" height="25" as="geometry"/>
-                </mxCell>
-                <mxCell id="legend-step6" value="❻  Private Endpoint establishes secure connection to Foundry for chat completion" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontColor=#333333;" parent="1" vertex="1">
-                    <mxGeometry x="750" y="770" width="600" height="25" as="geometry"/>
-                </mxCell>
-                <mxCell id="security-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF9C4;strokeColor=#FBC02D;strokeWidth=2;" parent="1" vertex="1">
-                    <mxGeometry x="100" y="820" width="1250" height="80" as="geometry"/>
-                </mxCell>
-                <mxCell id="security-title" value="🔒 Security Highlights:" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontColor=#F57F17;" parent="1" vertex="1">
-                    <mxGeometry x="120" y="830" width="200" height="20" as="geometry"/>
-                </mxCell>
-                <mxCell id="security-detail1" value="• All traffic is private after initial entry point  |  • APIM uses Managed Identity (RBAC: Cognitive Services User + Azure AI User)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#666666;" parent="1" vertex="1">
-                    <mxGeometry x="120" y="850" width="1210" height="20" as="geometry"/>
-                </mxCell>
-                <mxCell id="security-detail2" value="&amp;nbsp;• VNet peering enables secure Hub-Spoke communication  |  • No public internet exposure except App Gateway" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#666666;" parent="1" vertex="1">
-                    <mxGeometry x="120" y="870" width="1210" height="20" as="geometry"/>
-                </mxCell>
-                <mxCell id="2" value="" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/ai_machine_learning/AI_Studio.svg;" parent="1" vertex="1">
-                    <mxGeometry x="861" y="412" width="64" height="68" as="geometry"/>
-                </mxCell>
-                <mxCell id="3" value="" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/other/Worker_Container_App.svg;" parent="1" vertex="1">
-                    <mxGeometry x="866" y="167" width="68" height="66" as="geometry"/>
-                </mxCell>
-                <mxCell id="4" value="" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/app_services/API_Management_Services.svg;" parent="1" vertex="1">
-                    <mxGeometry x="1226" y="170" width="68" height="63" as="geometry"/>
-                </mxCell>
-                <mxCell id="6" value="" style="image;sketch=0;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/mscae/DNS_Private_Zones.svg;" parent="1" vertex="1">
-                    <mxGeometry x="1234" y="430" width="60" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="7" value="" style="outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#0078D4;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.users;shadow=0;" parent="1" vertex="1">
-                    <mxGeometry x="172.5" y="160" width="55" height="55" as="geometry"/>
-                </mxCell>
-            </root>
-        </mxGraphModel>
-    </diagram>
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.2.9 Chrome/140.0.7339.249 Electron/38.7.2 Safari/537.36" version="29.2.9">
+  <diagram id="NetworkFlowV2" name="Network Flow">
+    <mxGraphModel dx="933" dy="649" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" background="#F5F7FA" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1;fontColor=#2C3E50;" value="AI Network Traffic Flow" vertex="1">
+          <mxGeometry height="40" width="600" x="500" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="zone-internet" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#4CAF50;strokeWidth=3;fontSize=13;fontStyle=1;verticalAlign=top;align=center;shadow=1;" value="Internet / Public Access" vertex="1">
+          <mxGeometry height="180" width="240" x="80" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="internet-label" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontColor=#2C3E50;" value="End User" vertex="1">
+          <mxGeometry height="30" width="90" x="155" y="215" as="geometry" />
+        </mxCell>
+        <mxCell id="internet-detail" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#666666;" value="HTTPS Request&#xa;Port 443" vertex="1">
+          <mxGeometry height="35" width="110" x="145" y="245" as="geometry" />
+        </mxCell>
+        <mxCell id="zone-agw" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#2196F3;strokeWidth=3;fontSize=13;fontStyle=1;verticalAlign=top;align=center;shadow=1;" value="Hub VNet - Entry Point (10.0.0.0/24)" vertex="1">
+          <mxGeometry height="180" width="280" x="400" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="agw-subnet-label" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontColor=#1976D2;fontStyle=2" value="Subnet: 10.0.0.64/26" vertex="1">
+          <mxGeometry height="20" width="150" x="465" y="145" as="geometry" />
+        </mxCell>
+        <mxCell id="app-gateway" parent="1" style="sketch=0;aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/mscae/Application_Gateway.svg;" value="" vertex="1">
+          <mxGeometry height="50" width="50" x="515" y="175" as="geometry" />
+        </mxCell>
+        <mxCell id="agw-label" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontColor=#2C3E50;" value="Application Gateway" vertex="1">
+          <mxGeometry height="25" width="130" x="475" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="agw-detail" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#666666;" value="WAF + TLS Termination&#xa;Public IP Frontend" vertex="1">
+          <mxGeometry height="35" width="160" x="460" y="255" as="geometry" />
+        </mxCell>
+        <mxCell id="zone-aca" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#FF9800;strokeWidth=3;fontSize=13;fontStyle=1;verticalAlign=top;align=center;shadow=1;" value="Spoke VNet - Application (10.0.4.0/22)" vertex="1">
+          <mxGeometry height="180" width="280" x="760" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="aca-subnet-label" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontColor=#F57C00;fontStyle=2" value="Subnet: 10.0.4.0/23" vertex="1">
+          <mxGeometry height="20" width="150" x="825" y="145" as="geometry" />
+        </mxCell>
+        <mxCell id="aca-label" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontColor=#2C3E50;" value="Container App" vertex="1">
+          <mxGeometry height="25" width="130" x="835" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="aca-detail" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#666666;" value="Open WebUI Frontend&lt;br&gt;Private Endpoint Only&lt;div&gt;Internal Ingress&lt;/div&gt;" vertex="1">
+          <mxGeometry height="35" width="160" x="820" y="255" as="geometry" />
+        </mxCell>
+        <mxCell id="zone-apim" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3E5F5;strokeColor=#9C27B0;strokeWidth=3;fontSize=13;fontStyle=1;verticalAlign=top;align=center;shadow=1;" value="Hub VNet - API Management (10.0.0.0/24)" vertex="1">
+          <mxGeometry height="180" width="280" x="1120" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="apim-subnet-label" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontColor=#7B1FA2;fontStyle=2" value="Subnet: 10.0.0.0/28" vertex="1">
+          <mxGeometry height="20" width="150" x="1185" y="145" as="geometry" />
+        </mxCell>
+        <mxCell id="apim-label" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontColor=#2C3E50;" value="API Management" vertex="1">
+          <mxGeometry height="25" width="130" x="1195" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="apim-detail" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#666666;" value="Internal VNet Mode&lt;br&gt;Managed Identity Auth&lt;div&gt;Entra OAuth validation + Sub Key&lt;/div&gt;" vertex="1">
+          <mxGeometry height="35" width="160" x="1180" y="255" as="geometry" />
+        </mxCell>
+        <mxCell id="zone-pe" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FCE4EC;strokeColor=#E91E63;strokeWidth=3;fontSize=13;fontStyle=1;verticalAlign=top;align=center;shadow=1;" value="Hub VNet - Private Connectivity (10.0.0.0/24)" vertex="1">
+          <mxGeometry height="180" width="280" x="1120" y="380" as="geometry" />
+        </mxCell>
+        <mxCell id="pe-subnet-label" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontColor=#C2185B;fontStyle=2" value="Subnet: 10.0.0.128/28" vertex="1">
+          <mxGeometry height="20" width="150" x="1185" y="405" as="geometry" />
+        </mxCell>
+        <mxCell id="pe-label" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontColor=#2C3E50;" value="Private Endpoint" vertex="1">
+          <mxGeometry height="25" width="130" x="1195" y="490" as="geometry" />
+        </mxCell>
+        <mxCell id="pe-detail" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#666666;" value="&lt;div&gt;openwebuiapp.azure.ai.com&lt;/div&gt;Private Link Connection" vertex="1">
+          <mxGeometry height="35" width="160" x="1180" y="515" as="geometry" />
+        </mxCell>
+        <mxCell id="zone-foundry" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E0F2F1;strokeColor=#00897B;strokeWidth=3;fontSize=13;fontStyle=1;verticalAlign=top;align=center;shadow=1;" value="Microsoft Foundry" vertex="1">
+          <mxGeometry height="180" width="280" x="760" y="380" as="geometry" />
+        </mxCell>
+        <mxCell id="foundry-label" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontColor=#2C3E50;" value="Azure AI Foundry" vertex="1">
+          <mxGeometry height="25" width="130" x="835" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="foundry-detail" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#666666;" value="AI Models&lt;br&gt;RBAC: Cognitive Services User&lt;div&gt;Azure AI User&lt;/div&gt;" vertex="1">
+          <mxGeometry height="35" width="160" x="820" y="505" as="geometry" />
+        </mxCell>
+        <mxCell id="dns-box" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#90CAF9;strokeWidth=2;shadow=1;" value="" vertex="1">
+          <mxGeometry height="90" width="280" x="400" y="380" as="geometry" />
+        </mxCell>
+        <mxCell id="dns" parent="1" style="sketch=0;aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/mscae/DNS.svg;" value="" vertex="1">
+          <mxGeometry height="40" width="40" x="440" y="405" as="geometry" />
+        </mxCell>
+        <mxCell id="dns-label" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontStyle=1;fontColor=#2C3E50;" value="Private DNS Zones" vertex="1">
+          <mxGeometry height="20" width="180" x="490" y="405" as="geometry" />
+        </mxCell>
+        <mxCell id="dns-detail" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontColor=#666666;" value="Resolves Container App FQDN&lt;br&gt;Resolves APIM internal endpoint&lt;div&gt;Resolves Foundry FQDN endpoint&lt;/div&gt;" vertex="1">
+          <mxGeometry height="35" width="180" x="490" y="425" as="geometry" />
+        </mxCell>
+        <mxCell id="peering-box" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#81C784;strokeWidth=2;shadow=1;" value="" vertex="1">
+          <mxGeometry height="70" width="280" x="400" y="490" as="geometry" />
+        </mxCell>
+        <mxCell id="peering-icon" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=24;fontColor=#4CAF50;fontStyle=1" value="⇄" vertex="1">
+          <mxGeometry height="40" width="30" x="445" y="505" as="geometry" />
+        </mxCell>
+        <mxCell id="peering-label" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontStyle=1;fontColor=#2C3E50;" value="VNet Peering" vertex="1">
+          <mxGeometry height="20" width="180" x="485" y="505" as="geometry" />
+        </mxCell>
+        <mxCell id="peering-detail" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontColor=#666666;" value="Hub ⟷ Spoke connectivity&#xa;Allows cross-VNet private traffic" vertex="1">
+          <mxGeometry height="30" width="180" x="485" y="525" as="geometry" />
+        </mxCell>
+        <mxCell id="flow1" edge="1" parent="1" source="zone-internet" style="endArrow=classic;html=1;rounded=1;strokeWidth=4;strokeColor=#4CAF50;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;curved=0;" target="zone-agw" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="320" y="210" as="sourcePoint" />
+            <mxPoint x="400" y="210" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="step1" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#4CAF50;strokeColor=#FFFFFF;strokeWidth=3;fontColor=#ffffff;fontSize=16;fontStyle=1;shadow=1;" value="❶" vertex="1">
+          <mxGeometry height="30" width="30" x="335" y="195" as="geometry" />
+        </mxCell>
+        <mxCell id="flow2" edge="1" parent="1" source="zone-agw" style="endArrow=classic;html=1;rounded=1;strokeWidth=2;strokeColor=#2196F3;dashed=1;dashPattern=8 4;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;curved=1;" target="dns-box" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="540" y="310" as="sourcePoint" />
+            <mxPoint x="540" y="370" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="step2" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#2196F3;strokeColor=#FFFFFF;strokeWidth=3;fontColor=#ffffff;fontSize=16;fontStyle=1;shadow=1;" value="❷" vertex="1">
+          <mxGeometry height="30" width="30" x="525" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="flow3" edge="1" parent="1" source="zone-agw" style="endArrow=classic;html=1;rounded=1;strokeWidth=4;strokeColor=#FF9800;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;curved=0;" target="zone-aca" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="680" y="210" as="sourcePoint" />
+            <mxPoint x="760" y="210" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="step3" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#FF9800;strokeColor=#FFFFFF;strokeWidth=3;fontColor=#ffffff;fontSize=16;fontStyle=1;shadow=1;" value="❸" vertex="1">
+          <mxGeometry height="30" width="30" x="705" y="195" as="geometry" />
+        </mxCell>
+        <mxCell id="flow4" edge="1" parent="1" source="zone-aca" style="endArrow=classic;html=1;rounded=1;strokeWidth=4;strokeColor=#9C27B0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;curved=0;" target="zone-apim" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="1040" y="210" as="sourcePoint" />
+            <mxPoint x="1120" y="210" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="step4" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#9C27B0;strokeColor=#FFFFFF;strokeWidth=3;fontColor=#ffffff;fontSize=16;fontStyle=1;shadow=1;" value="❹" vertex="1">
+          <mxGeometry height="30" width="30" x="1065" y="195" as="geometry" />
+        </mxCell>
+        <mxCell id="flow5" edge="1" parent="1" source="zone-apim" style="endArrow=classic;html=1;rounded=1;strokeWidth=4;strokeColor=#E91E63;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;curved=0;" target="zone-pe" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="1260" y="310" as="sourcePoint" />
+            <mxPoint x="1260" y="370" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="step5" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#E91E63;strokeColor=#FFFFFF;strokeWidth=3;fontColor=#ffffff;fontSize=16;fontStyle=1;shadow=1;" value="❺" vertex="1">
+          <mxGeometry height="30" width="30" x="1245" y="335" as="geometry" />
+        </mxCell>
+        <mxCell id="flow6" edge="1" parent="1" source="zone-pe" style="endArrow=classic;html=1;rounded=1;strokeWidth=4;strokeColor=#00897B;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;curved=0;" target="zone-foundry" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="1100" y="470" as="sourcePoint" />
+            <mxPoint x="1040" y="470" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="step6" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#00897B;strokeColor=#FFFFFF;strokeWidth=3;fontColor=#ffffff;fontSize=16;fontStyle=1;shadow=1;" value="❻" vertex="1">
+          <mxGeometry height="30" width="30" x="1065" y="455" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-box" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BDBDBD;strokeWidth=2;shadow=1;" value="" vertex="1">
+          <mxGeometry height="280" width="1320" x="80" y="640" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1;fontColor=#2C3E50;" value="🔄 Network Traffic Flow Sequence" vertex="1">
+          <mxGeometry height="30" width="1320" x="80" y="655" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-step1" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontColor=#333333;" value="❶  User initiates HTTPS request (port 443) → App Gateway public IP address via Cloudflare waf/proxy/dns" vertex="1">
+          <mxGeometry height="25" width="600" x="100" y="700" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-step2" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontColor=#333333;" value="❷  App Gateway queries Private DNS Zone to resolve Container App FQDN" vertex="1">
+          <mxGeometry height="25" width="600" x="100" y="735" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-step3" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontColor=#333333;" value="❸  App Gateway forwards traffic to Container App (10.0.4.x) via VNet peering" vertex="1">
+          <mxGeometry height="25" width="600" x="100" y="770" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-step4" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontColor=#333333;" value="❹  Container App makes API call to APIM internal endpoint (10.0.0.x)" vertex="1">
+          <mxGeometry height="25" width="600" x="750" y="700" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-step5" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontColor=#333333;" value="❺  APIM authenticates using Managed Identity + Entra JWT → Private Endpoint connection" vertex="1">
+          <mxGeometry height="25" width="600" x="750" y="735" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-step6" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontColor=#333333;" value="❻  Private Endpoint establishes secure connection to Foundry for chat completion" vertex="1">
+          <mxGeometry height="25" width="600" x="750" y="770" as="geometry" />
+        </mxCell>
+        <mxCell id="security-box" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF9C4;strokeColor=#FBC02D;strokeWidth=2;" value="" vertex="1">
+          <mxGeometry height="80" width="1250" x="100" y="820" as="geometry" />
+        </mxCell>
+        <mxCell id="security-title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontColor=#F57F17;" value="🔒 Security Highlights:" vertex="1">
+          <mxGeometry height="20" width="200" x="120" y="830" as="geometry" />
+        </mxCell>
+        <mxCell id="security-detail1" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#666666;" value="• All traffic is private after initial entry point  |  • APIM uses Managed Identity (RBAC: Cognitive Services User + Azure AI User)" vertex="1">
+          <mxGeometry height="20" width="1210" x="120" y="850" as="geometry" />
+        </mxCell>
+        <mxCell id="security-detail2" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontColor=#666666;" value="&amp;nbsp;• VNet peering enables secure Hub-Spoke communication  |  • No public internet exposure except App Gateway" vertex="1">
+          <mxGeometry height="20" width="1210" x="120" y="870" as="geometry" />
+        </mxCell>
+        <mxCell id="2" parent="1" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/ai_machine_learning/AI_Studio.svg;" value="" vertex="1">
+          <mxGeometry height="68" width="64" x="861" y="412" as="geometry" />
+        </mxCell>
+        <mxCell id="3" parent="1" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/other/Worker_Container_App.svg;" value="" vertex="1">
+          <mxGeometry height="66" width="68" x="866" y="167" as="geometry" />
+        </mxCell>
+        <mxCell id="4" parent="1" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/azure2/app_services/API_Management_Services.svg;" value="" vertex="1">
+          <mxGeometry height="63" width="68" x="1226" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="6" parent="1" style="image;sketch=0;aspect=fixed;html=1;points=[];align=center;fontSize=12;image=img/lib/mscae/DNS_Private_Zones.svg;" value="" vertex="1">
+          <mxGeometry height="60" width="60" x="1234" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="7" parent="1" style="outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#0078D4;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.users;shadow=0;" value="" vertex="1">
+          <mxGeometry height="55" width="55" x="172.5" y="160" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
 </mxfile>
