@@ -20,7 +20,7 @@
         </validate-azure-ad-token>
         <!-- AI Gateway: Emit token metrics for analytics with model dimension -->
         <llm-emit-token-metric>
-            <dimension name="Client IP address" value="@(context.Request.IpAddress)" />
+            <dimension name="Client IP address" value="@(context.Request.Headers.GetValueOrDefault(&quot;Authorization&quot;,&quot;&quot;).AsJwt()?.Claims.GetValueOrDefault(&quot;ipaddr&quot;, &quot;unknown&quot;))" />
             <dimension name="User ID" value="@(context.Request.Headers.GetValueOrDefault(&quot;Authorization&quot;,&quot;&quot;).AsJwt()?.Claims.GetValueOrDefault(&quot;preferred_username&quot;, &quot;anonymous&quot;))" />
             <dimension name="Model" value="@((string)context.Variables[&quot;model&quot;])" />
             <dimension name="Subscription ID" />

@@ -126,10 +126,20 @@ resource resEntraIdApp 'Microsoft.Graph/applications@v1.0' = {
         essential: false
         additionalProperties: []
       }
+      {
+        name: 'ipaddr'
+        essential: false
+        additionalProperties: []
+      }
     ]
     accessToken: [
       {
         name: 'groups'
+        essential: false
+        additionalProperties: []
+      }
+      {
+        name: 'ipaddr'
         essential: false
         additionalProperties: []
       }
