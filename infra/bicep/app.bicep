@@ -767,6 +767,7 @@ module modFoundry 'br/public:avm/res/cognitive-services/account:0.14.0' = {
 output outContainerAppFqdn string = modContainerApp.outputs.fqdn
 output outContainerAppResourceId string = modContainerApp.outputs.resourceId
 output outContainerAppEnvDefaultDomain string = modContainerAppEnv.outputs.defaultDomain
+output outContainerAppEnvStaticIp string = modContainerAppEnv.outputs.staticIp
 output outVirtualNetworkName string = modVirtualNetwork.outputs.name
 output outVirtualNetworkResourceId string = modVirtualNetwork.outputs.resourceId
 output outFoundryEndpoint string = modFoundry.outputs.endpoint

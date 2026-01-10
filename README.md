@@ -99,17 +99,14 @@ az deployment sub create --location uksouth --template-file infra/bicep/app.bice
 **Note these outputs:**
 
 - `outContainerAppFqdn` - Container App FQDN
+- `outContainerAppEnvStaticIp` - Container App Environment static IP
 - `outVirtualNetworkName` - Spoke VNet name
 - `outOpenWebUIAppId` - Entra ID App Registration ID
-
-**Also note the Container App Environment static IP:**
-
-- Azure Portal → Container Apps Environment → Overview → Static IP
 
 **Update `main.bicepparam` with spoke values:**
 
 - `parContainerAppFqdn` - Use `outContainerAppFqdn`
-- `parContainerAppStaticIp` - Container App Environment static IP
+- `parContainerAppStaticIp` - Use `outContainerAppEnvStaticIp`
 - `parSpokeVirtualNetworkName` - Use `outVirtualNetworkName`
 - `parOpenWebUIAppId` - Use `outOpenWebUIAppId`
 
